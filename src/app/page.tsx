@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { SignupForm } from "@/components/SignupForm";
 import { SITE } from "@/config/site";
 
@@ -20,10 +19,7 @@ const blocks = [
 export default function Home() {
   return (
     <>
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-10">
-        <Link href="/" className="font-display text-3xl font-extrabold tracking-wide uppercase">
-          {SITE.house}
-        </Link>
+      <header className="mx-auto flex max-w-6xl items-center justify-end px-5 py-4 sm:px-10">
         <a
           href="#join"
           className="inline-flex min-h-11 items-center rounded-sm border-[3px] border-ink px-4 text-sm font-bold"
@@ -35,12 +31,12 @@ export default function Home() {
       <main>
         <section className="mx-auto grid max-w-6xl gap-5 px-5 pt-0 pb-12 sm:px-10 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16 lg:pt-12 lg:pb-20">
           <div>
-            <h1 className="font-display text-[clamp(4rem,21vw,10rem)] leading-[0.86] font-extrabold tracking-normal text-primary uppercase">
+            <h1 className="font-wordmark text-[clamp(2.4rem,12.6vw,6rem)] leading-[1] font-normal text-primary">
               Paradise
               <br />
               Sessions
             </h1>
-            <p className="mt-4 max-w-[28ch] font-display text-[1.75rem] leading-[1.05] font-bold sm:mt-5 sm:text-4xl">
+            <p className="mt-4 max-w-[28ch] font-display text-[1.75rem] leading-[1.05] font-bold sm:mt-5 sm:text-[2.5rem]">
               Filipino-American talent, every genre, every generation.
             </p>
           </div>
@@ -63,7 +59,7 @@ export default function Home() {
                 key={b.title}
                 className="rounded-sm border-[3px] border-ink bg-white p-6 shadow-card"
               >
-                <h3 className="font-display text-3xl leading-none font-bold">{b.title}</h3>
+                <h3 className="font-display text-[2.1rem] leading-none font-bold">{b.title}</h3>
                 <p className="mt-3 text-ink-soft">{b.body}</p>
               </li>
             ))}
@@ -74,7 +70,7 @@ export default function Home() {
           <div className="mx-auto max-w-6xl px-5 py-10 sm:px-10 sm:py-14">
             <h2
               id="first"
-              className="max-w-[18ch] font-display text-[clamp(2.5rem,9vw,5rem)] leading-[0.95] font-extrabold uppercase"
+              className="max-w-[18ch] font-display text-[clamp(1.5rem,5.4vw,3rem)] leading-[0.95] font-extrabold uppercase"
             >
               The first show goes to the list first.
             </h2>
@@ -88,7 +84,7 @@ export default function Home() {
           <div className="mx-auto grid max-w-6xl gap-8 px-5 py-14 sm:px-10 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-20">
             <h2
               id="join2"
-              className="font-display text-[clamp(2.75rem,10vw,5.5rem)] leading-[0.92] font-extrabold uppercase"
+              className="font-display text-[clamp(1.65rem,6vw,3.3rem)] leading-[0.92] font-extrabold uppercase"
             >
               Be first in the room.
             </h2>
