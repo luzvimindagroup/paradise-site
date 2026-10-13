@@ -1,4 +1,6 @@
+import { EventHero } from "@/components/EventHero";
 import { SignupForm } from "@/components/SignupForm";
+import { FEATURED_EVENT } from "@/config/featured-event";
 import { SITE } from "@/config/site";
 
 const blocks = [
@@ -51,7 +53,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section aria-labelledby="what" className="mx-auto max-w-6xl px-5 pb-14 sm:px-10 lg:pb-20">
+        <EventHero event={FEATURED_EVENT} />
+
+        <section aria-labelledby="what" className="mx-auto max-w-6xl px-5 py-14 sm:px-10 lg:py-20">
           <h2 id="what" className="sr-only">What Paradise Sessions is</h2>
           <ul className="grid gap-6 md:grid-cols-3">
             {blocks.map((b) => (
