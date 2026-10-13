@@ -31,7 +31,7 @@ export default function Home() {
       <main>
         <section className="mx-auto grid max-w-6xl gap-5 px-5 pt-0 pb-12 sm:px-10 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16 lg:pt-12 lg:pb-20">
           <div>
-            <h1 className="font-wordmark text-[clamp(2.4rem,12.6vw,6rem)] leading-[1] font-normal text-primary">
+            <h1 className="font-wordmark text-[clamp(2.4rem,12.6vw,6rem)] leading-[1] font-normal italic text-primary">
               Paradise
               <br />
               Sessions

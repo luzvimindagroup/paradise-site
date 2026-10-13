@@ -18,7 +18,7 @@
 
   /* Type */
   --font-display: var(--font-shoulders), ui-sans-serif, system-ui, sans-serif;
-  --font-wordmark: var(--font-sedgwick), var(--font-shoulders), ui-sans-serif, sans-serif;
+  --font-wordmark: var(--font-cal-sans), var(--font-shoulders), ui-sans-serif, sans-serif;
   --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
 
   --text-xs: 0.8125rem;

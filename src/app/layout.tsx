@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Big_Shoulders, Figtree, Sedgwick_Ave_Display } from "next/font/google";
+import { Big_Shoulders, Figtree, Cal_Sans } from "next/font/google";
 import { ALLOW_INDEXING, SITE } from "@/config/site";
 import "./globals.css";
 
@@ -9,8 +9,8 @@ const shoulders = Big_Shoulders({
   weight: ["700", "800"],
 });
 
-const sedgwick = Sedgwick_Ave_Display({
-  variable: "--font-sedgwick",
+const calSans = Cal_Sans({
+  variable: "--font-cal-sans",
   subsets: ["latin"],
   weight: "400",
 });
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${shoulders.variable} ${figtree.variable} ${sedgwick.variable}`}>
+    <html lang="en" className={`${shoulders.variable} ${figtree.variable} ${calSans.variable}`}>
       <body className="min-h-dvh">{children}</body>
     </html>
   );
