@@ -42,7 +42,7 @@ export default function Home() {
           </div>
           <div
             id="join"
-            className="scroll-mt-4 rounded-sm border-[3px] border-ink bg-white p-5 shadow-card sm:p-7"
+            className="scroll-mt-4 rounded-sm border-[3px] border-ink bg-surface p-5 shadow-card sm:p-7"
           >
             <p className="mb-3 font-display text-xl leading-tight font-bold sm:mb-4 sm:text-2xl">
               Hear about the first show.
@@ -57,7 +57,7 @@ export default function Home() {
             {blocks.map((b) => (
               <li
                 key={b.title}
-                className="rounded-sm border-[3px] border-ink bg-white p-6 shadow-card"
+                className="rounded-sm border-[3px] border-ink bg-surface p-6 shadow-card"
               >
                 <h3 className="font-display text-[2.1rem] leading-none font-bold">{b.title}</h3>
                 <p className="mt-3 text-ink-soft">{b.body}</p>
@@ -66,7 +66,7 @@ export default function Home() {
           </ul>
         </section>
 
-        <section aria-labelledby="first" className="border-y-[3px] border-ink bg-lime">
+        <section aria-labelledby="first" className="border-y-[3px] border-ink bg-lime text-on-lime">
           <div className="mx-auto max-w-6xl px-5 py-10 sm:px-10 sm:py-14">
             <h2
               id="first"
@@ -80,7 +80,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section aria-labelledby="join2" className="bg-primary text-white">
+        <section aria-labelledby="join2" className="bg-primary text-on-primary">
           <div className="mx-auto grid max-w-6xl gap-8 px-5 py-14 sm:px-10 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-20">
             <h2
               id="join2"

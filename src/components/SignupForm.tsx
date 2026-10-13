@@ -11,10 +11,10 @@ export function SignupForm({ onDark = false }: { onDark?: boolean }) {
   const err = state.status === "error" ? state : null;
 
   const field =
-    "block w-full min-h-14 rounded-sm border-[3px] border-ink bg-white px-4 text-base text-ink placeholder:text-ink-soft " +
+    "block w-full min-h-14 rounded-sm border-[3px] border-ink bg-field px-4 text-base text-ink placeholder:text-ink-soft " +
     (onDark ? "focus-visible:outline-lime" : "");
-  const label = "mb-1 block text-sm font-semibold " + (onDark ? "text-white" : "text-ink");
-  const errText = onDark ? "text-lime" : "text-chili";
+  const label = "mb-1 block text-sm font-semibold " + (onDark ? "text-on-primary" : "text-ink");
+  const errText = onDark ? "text-on-primary underline" : "text-chili";
 
   return (
     <form action={action} noValidate className="grid gap-4" aria-describedby={`${uid}-status`}>
@@ -38,7 +38,7 @@ export function SignupForm({ onDark = false }: { onDark?: boolean }) {
         </div>
       </div>
 
-      <label className={"flex items-start gap-3 text-sm " + (onDark ? "text-white" : "text-ink")}>
+      <label className={"flex items-start gap-3 text-sm " + (onDark ? "text-on-primary" : "text-ink")}>
         <input
           type="checkbox" name="consent" required
           aria-invalid={err?.field === "consent"}
@@ -52,8 +52,8 @@ export function SignupForm({ onDark = false }: { onDark?: boolean }) {
         className={
           "min-h-14 rounded-sm border-[3px] border-ink px-6 text-lg font-bold shadow-pop transition-transform active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:cursor-wait disabled:opacity-70 " +
           (onDark
-            ? "bg-lime text-ink focus-visible:outline-lime"
-            : "bg-primary text-white hover:bg-primary-deep")
+            ? "bg-lime text-on-lime focus-visible:outline-lime"
+            : "bg-primary text-on-primary hover:bg-primary-deep")
         }
       >
         {pending ? "Joining…" : "Get first access"}
@@ -62,7 +62,7 @@ export function SignupForm({ onDark = false }: { onDark?: boolean }) {
       <p id={`${uid}-status`} role="status" aria-live="polite" className="text-sm font-semibold">
         {err && <span className={errText}>{err.message}</span>}
         {state.status === "not_connected" && (
-          <span className={onDark ? "text-white" : "text-ink"}>{state.message}</span>
+          <span className={onDark ? "text-on-primary" : "text-ink"}>{state.message}</span>
         )}
       </p>
     </form>

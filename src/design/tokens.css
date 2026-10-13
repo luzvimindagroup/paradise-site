@@ -13,7 +13,11 @@
   --color-ink-soft: #5a5063;
   --color-primary: #4a2a82; /* ube */
   --color-primary-deep: #35205f;
+  --color-surface: #ffffff; /* cards */
+  --color-field: #ffffff; /* inputs */
+  --color-on-primary: #ffffff;
   --color-lime: #d4e157; /* calamansi, fills only */
+  --color-on-lime: #1b1522;
   --color-chili: #c4401f; /* sparingly */
 
   /* Type */
@@ -41,4 +45,25 @@
 
   /* Spacing scale base (Tailwind multiplies this) */
   --spacing: 0.25rem;
+}
+
+/*
+  Dark version (preview at /dark). Same names, dark values: wrap any page in
+  .theme-dark. Pairs: ink/paper 16.5, ink-soft/surface 7.9, primary/paper 8.1,
+  on-primary/primary 8.1, chili/paper 7.3.
+*/
+.theme-dark {
+  --color-paper: #15101c;
+  --color-paper-deep: #1f1829;
+  --color-ink: #f4eff2;
+  --color-ink-soft: #b9aec6;
+  --color-primary: #b79cf2;
+  --color-primary-deep: #cbb6f7;
+  --color-surface: #221a2e;
+  --color-field: #2c2239;
+  --color-on-primary: #15101c;
+  --color-chili: #ff7a59;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  color-scheme: dark;
 }
