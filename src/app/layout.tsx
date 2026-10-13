@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Figtree } from "next/font/google";
+import { Big_Shoulders, Figtree } from "next/font/google";
 import { ALLOW_INDEXING, SITE } from "@/config/site";
 import "./globals.css";
 
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
+const shoulders = Big_Shoulders({
+  variable: "--font-shoulders",
   subsets: ["latin"],
+  weight: ["700", "800"],
 });
 
 const figtree = Figtree({
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${bricolage.variable} ${figtree.variable}`}>
+    <html lang="en" className={`${shoulders.variable} ${figtree.variable}`}>
       <body className="min-h-dvh">{children}</body>
     </html>
   );
