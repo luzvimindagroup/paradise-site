@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "../design/tokens.css";
 
+html {
+  color-scheme: dark;
+}
+
 body {
   background: var(--color-paper);
   color: var(--color-ink);

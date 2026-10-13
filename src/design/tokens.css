@@ -1,24 +1,24 @@
 /*
   Paradise design tokens — the ONE place for colors, type, spacing, radius.
   A future logo/palette swap is an edit to this file only.
-  Direction: "Ube Marquee" (picked by Alan). Pairs below are WCAG 2.1 AA:
-  ink/paper 15.7, white/primary 10.8, primary/paper 9.5, ink/lime 12.5,
-  white/chili 5.1, chili/paper 4.5. Lime is a fill; never use it for text on paper.
+  Direction: "Ube Marquee" in dark (picked by Alan). Pairs below are WCAG 2.1 AA:
+  ink/paper 16.5, ink-soft/surface 7.9, primary/paper 8.1, on-primary/primary 8.1,
+  on-lime/lime 12.5, chili/paper 7.3. Lime is a fill; never use it for text on paper.
 */
 @theme {
-  /* Color: light warm-neutral base, near-black text, ONE primary, two supporting */
-  --color-paper: #f4eff2;
-  --color-paper-deep: #e8dfe6;
-  --color-ink: #1b1522;
-  --color-ink-soft: #5a5063;
-  --color-primary: #4a2a82; /* ube */
-  --color-primary-deep: #35205f;
-  --color-surface: #ffffff; /* cards */
-  --color-field: #ffffff; /* inputs */
-  --color-on-primary: #ffffff;
+  /* Color: dark plum base, near-white text, ONE primary (lavender), two supporting */
+  --color-paper: #15101c;
+  --color-paper-deep: #1f1829;
+  --color-ink: #f4eff2;
+  --color-ink-soft: #b9aec6;
+  --color-primary: #b79cf2; /* lavender (ube family) */
+  --color-primary-deep: #cbb6f7;
+  --color-surface: #221a2e; /* cards */
+  --color-field: #2c2239; /* inputs */
+  --color-on-primary: #15101c;
   --color-lime: #d4e157; /* calamansi, fills only */
   --color-on-lime: #1b1522;
-  --color-chili: #c4401f; /* sparingly */
+  --color-chili: #ff7a59; /* sparingly */
 
   /* Type */
   --font-display: var(--font-shoulders), ui-sans-serif, system-ui, sans-serif;
@@ -45,25 +45,4 @@
 
   /* Spacing scale base (Tailwind multiplies this) */
   --spacing: 0.25rem;
-}
-
-/*
-  Dark version (preview at /dark). Same names, dark values: wrap any page in
-  .theme-dark. Pairs: ink/paper 16.5, ink-soft/surface 7.9, primary/paper 8.1,
-  on-primary/primary 8.1, chili/paper 7.3.
-*/
-.theme-dark {
-  --color-paper: #15101c;
-  --color-paper-deep: #1f1829;
-  --color-ink: #f4eff2;
-  --color-ink-soft: #b9aec6;
-  --color-primary: #b79cf2;
-  --color-primary-deep: #cbb6f7;
-  --color-surface: #221a2e;
-  --color-field: #2c2239;
-  --color-on-primary: #15101c;
-  --color-chili: #ff7a59;
-  background: var(--color-paper);
-  color: var(--color-ink);
-  color-scheme: dark;
 }
