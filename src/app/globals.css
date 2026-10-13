@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@import "../design/tokens.css";
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-lagoon);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

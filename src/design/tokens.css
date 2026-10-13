@@ -1,0 +1,38 @@
+/*
+  Paradise design tokens — the ONE place for colors, type, spacing, radius.
+  A future logo/palette swap is an edit to this file only.
+  Text/background pairs below were chosen for WCAG 2.1 AA (4.5:1) contrast.
+  --color-sun is a fill-only accent: never use it for text on paper.
+*/
+@theme {
+  /* Color: warm-neutral base, near-black text, ONE primary, two supporting */
+  --color-paper: #f2eee9;
+  --color-paper-deep: #e8e2da;
+  --color-ink: #1c1917;
+  --color-ink-soft: #55504a;
+  --color-lagoon: #0b6461; /* primary accent */
+  --color-lagoon-deep: #084744;
+  --color-hibiscus: #b8225a; /* supporting, sparingly */
+  --color-sun: #e9b52f; /* supporting, fills only */
+
+  /* Type */
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.625rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: 3.25rem;
+  --text-4xl: 4.75rem;
+  --text-5xl: 7rem;
+
+  /* Radius: small and big only */
+  --radius-sm: 0.375rem;
+  --radius-lg: 1.5rem;
+
+  /* Spacing scale base (Tailwind multiplies this) */
+  --spacing: 0.25rem;
+}
