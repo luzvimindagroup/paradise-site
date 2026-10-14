@@ -6,7 +6,6 @@ const REVISION = "2024-10-15";
 export type KlaviyoProfile = {
   email: string;
   zip: string;
-  consentedAt: string;
   properties: Record<string, string | string[] | boolean | null>;
 };
 
@@ -46,7 +45,8 @@ export async function syncProfile(p: KlaviyoProfile): Promise<void> {
               type: "profile",
               attributes: {
                 email: p.email,
-                subscriptions: { email: { marketing: { consent: "SUBSCRIBED", consented_at: p.consentedAt } } },
+                // Klaviyo stamps consent time itself (consented_at is only allowed on historical imports). Our own copy is in subscribers.consent_at.
+                subscriptions: { email: { marketing: { consent: "SUBSCRIBED" } } },
               },
             }],
           },

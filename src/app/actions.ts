@@ -66,7 +66,6 @@ export async function joinList(_prev: JoinState, formData: FormData): Promise<Jo
       await syncProfile({
         email: s.email,
         zip: s.zip,
-        consentedAt,
         properties: {
           language: s.language,
           language_assumed: s.languageAssumed,
