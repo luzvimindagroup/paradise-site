@@ -2,10 +2,12 @@
 
 import { useActionState, useId } from "react";
 import { joinList, type JoinState } from "@/app/actions";
+import { AttributionFields } from "@/components/AttributionFields";
+import { CONSENT_TEXT, LANGUAGES } from "@/config/signup";
 
 const idle: JoinState = { status: "idle" };
 
-export function SignupForm() {
+export function SignupForm({ source, showLanguage = false }: { source: string; showLanguage?: boolean }) {
   const [state, action, pending] = useActionState(joinList, idle);
   const uid = useId();
   const err = state.status === "error" ? state : null;
@@ -15,7 +17,13 @@ export function SignupForm() {
   const label = "mb-1 block text-sm font-semibold text-ink";
 
   return (
-    <form action={action} noValidate className="grid gap-4" aria-describedby={`${uid}-status`}>
+    <form action={action} noValidate className="relative grid gap-4" aria-describedby={`${uid}-status`}>
+      <input type="hidden" name="source" value={source} />
+      <AttributionFields />
+      {/* Honeypot: people never see or reach this; bots fill it in. */}
+      <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+        <label>Company<input type="text" name="company" tabIndex={-1} autoComplete="off" /></label>
+      </div>
       <div className="grid gap-4 sm:grid-cols-[1fr_9rem]">
         <div>
           <label htmlFor={`${uid}-email`} className={label}>Email</label>
@@ -36,13 +44,22 @@ export function SignupForm() {
         </div>
       </div>
 
+      {showLanguage && (
+        <div>
+          <label htmlFor={`${uid}-lang`} className={label}>Language you prefer for emails</label>
+          <select id={`${uid}-lang`} name="language" defaultValue="English" className={field}>
+            {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
+          </select>
+        </div>
+      )}
+
       <label className="flex items-start gap-3 text-sm text-ink">
         <input
           type="checkbox" name="consent" required
           aria-invalid={err?.field === "consent"}
           className="mt-0.5 size-6 shrink-0 accent-primary"
         />
-        <span>Yes, email me about Paradise shows and news. I can unsubscribe anytime.</span>
+        <span>{CONSENT_TEXT} <a href="/privacy" className="underline">Privacy</a></span>
       </label>
 
       <button

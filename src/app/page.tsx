@@ -49,7 +49,7 @@ export default function Home() {
             <p className="mb-3 font-display text-xl leading-tight font-bold sm:mb-4 sm:text-2xl">
               Hear about the first show.
             </p>
-            <SignupForm />
+            <SignupForm source="home" />
           </div>
         </section>
 
@@ -92,7 +92,7 @@ export default function Home() {
             >
               Be first in the room.
             </h2>
-            <SignupForm />
+            <SignupForm source="home" />
           </div>
         </section>
       </main>
