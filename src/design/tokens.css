@@ -1,24 +1,22 @@
 /*
   Paradise design tokens — the ONE place for colors, type, spacing, radius.
   A future logo/palette swap is an edit to this file only.
-  Direction: "Ube Marquee" in dark (picked by Alan). Pairs below are WCAG 2.1 AA:
-  ink/paper 16.5, ink-soft/surface 7.9, primary/paper 8.1, on-primary/primary 8.1,
-  on-gold/gold 12.1, gold/paper 12.7, chili/paper 7.3. Gold is for fills and big display type only.
+  Direction: black, white, and ONE gold accent (picked by Alan). Pairs are WCAG 2.1 AA:
+  ink/paper 21, ink-soft/surface 8.9, gold/paper 13.5, on-primary/gold 13.5,
+  chili/paper 7.7.
 */
 @theme {
-  /* Color: dark plum base, near-white text, ONE primary (lavender), two supporting */
-  --color-paper: #15101c;
-  --color-paper-deep: #1f1829;
-  --color-ink: #f4eff2;
-  --color-ink-soft: #b9aec6;
-  --color-primary: #b79cf2; /* lavender (ube family) */
-  --color-primary-deep: #cbb6f7;
-  --color-surface: #221a2e; /* cards */
-  --color-field: #2c2239; /* inputs */
-  --color-on-primary: #15101c;
-  --color-gold: #fcd116; /* flag-inspired gold */
-  --color-on-gold: #1b1522;
-  --color-chili: #ff7a59; /* sparingly */
+  /* Color: black base, white text, ONE primary (gold), chili only for errors */
+  --color-paper: #000000;
+  --color-paper-deep: #0d0d0d;
+  --color-ink: #ffffff;
+  --color-ink-soft: #b8b8b8;
+  --color-primary: #fcd116; /* flag-inspired gold */
+  --color-primary-deep: #ffe066; /* hover */
+  --color-surface: #151515; /* cards */
+  --color-field: #222222; /* inputs */
+  --color-on-primary: #000000;
+  --color-chili: #ff7a59; /* error text only */
 
   /* Type */
   --font-display: var(--font-shoulders), ui-sans-serif, system-ui, sans-serif;

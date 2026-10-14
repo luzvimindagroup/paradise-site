@@ -42,8 +42,8 @@ export function EventHero({ event }: { event: FeaturedEvent | null }) {
           id="event-hero"
           className="font-display text-[clamp(3rem,15vw,7.5rem)] leading-[0.82] font-extrabold uppercase"
         >
-          <span className="block text-primary">First show</span>
-          <span className="block text-gold">Coming soon</span>
+          <span className="block text-ink">First show</span>
+          <span className="block text-primary">Coming soon</span>
         </h2>
         <p className="max-w-[40ch] text-lg text-ink-soft">
           Details go to the list first.

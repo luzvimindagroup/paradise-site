@@ -33,7 +33,7 @@ export default function Home() {
       <main>
         <section className="mx-auto grid max-w-6xl gap-5 px-5 pt-0 pb-12 sm:px-10 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16 lg:pt-12 lg:pb-20">
           <div>
-            <h1 className="font-wordmark text-[clamp(2.4rem,12.6vw,6rem)] leading-[1] font-normal italic text-primary">
+            <h1 className="font-wordmark text-[clamp(2.4rem,12.6vw,6rem)] leading-[1] font-normal italic text-ink">
               Paradise
               <br />
               Sessions
@@ -70,7 +70,7 @@ export default function Home() {
           </ul>
         </section>
 
-        <section aria-labelledby="first" className="border-y-[3px] border-ink bg-gold text-on-gold">
+        <section aria-labelledby="first" className="border-y-[3px] border-ink bg-primary text-on-primary">
           <div className="mx-auto max-w-6xl px-5 py-10 sm:px-10 sm:py-14">
             <h2
               id="first"
@@ -84,7 +84,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section aria-labelledby="join2" className="bg-primary text-on-primary">
+        <section aria-labelledby="join2" className="border-b-[3px] border-ink bg-surface">
           <div className="mx-auto grid max-w-6xl gap-8 px-5 py-14 sm:px-10 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-20">
             <h2
               id="join2"
@@ -92,7 +92,7 @@ export default function Home() {
             >
               Be first in the room.
             </h2>
-            <SignupForm onDark />
+            <SignupForm />
           </div>
         </section>
       </main>

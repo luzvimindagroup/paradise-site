@@ -51,7 +51,7 @@ No phone/SMS field until Alan says counsel cleared SMS consent — build it hidd
 Every signup writes to Klaviyo AND to our own Supabase `subscribers` table (we own a copy). Tag each profile with the landing page or artist slug it came from.
 
 ## Design rules
-- Modern, minimal, warm. Colorful but restrained: a dark plum base (Alan chose the dark "Ube Marquee" direction), near-white text, ONE primary accent (lavender) and at most two supporting accents (flag-inspired gold, chili) used sparingly. Type: Big Shoulders (headings), Figtree (text), Cal Sans italic for the "Paradise Sessions" wordmark. Generous whitespace. Typography does the heavy lifting.
+- Modern, minimal, warm. Colorful but restrained: a black base, white text and headings, and ONE gold accent (flag-inspired, #fcd116); chili only for error text (Alan chose this black/white/gold direction). Type: Big Shoulders (headings), Figtree (text), Cal Sans italic for the "Paradise Sessions" wordmark. Generous whitespace. Typography does the heavy lifting.
 - Mobile first: most visitors arrive from Instagram or a group-chat link on a phone. One-thumb forms.
 - No cultural clichés: no jeepney clip-art, bamboo fonts, tribal-pattern borders, flag-sun wallpaper.
 - Photo-forward with real photos of real local artists (with permission). Stock images only on preview builds.
