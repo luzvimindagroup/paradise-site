@@ -11,7 +11,7 @@ export default function Image() {
         style={{
           width: "100%", height: "100%", display: "flex", flexDirection: "column",
           justifyContent: "space-between", background: "#15101c", padding: 72,
-          borderBottom: "24px solid #d4e157", color: "#f4eff2",
+          borderBottom: "24px solid #fcd116", color: "#f4eff2",
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", fontSize: 168, lineHeight: 0.9, fontWeight: 800, color: "#b79cf2", textTransform: "uppercase", letterSpacing: -2 }}>

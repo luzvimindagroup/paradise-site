@@ -3,7 +3,7 @@
   A future logo/palette swap is an edit to this file only.
   Direction: "Ube Marquee" in dark (picked by Alan). Pairs below are WCAG 2.1 AA:
   ink/paper 16.5, ink-soft/surface 7.9, primary/paper 8.1, on-primary/primary 8.1,
-  on-lime/lime 12.5, chili/paper 7.3. Lime is a fill; never use it for text on paper.
+  on-gold/gold 12.1, gold/paper 12.7, chili/paper 7.3. Gold is for fills and big display type only.
 */
 @theme {
   /* Color: dark plum base, near-white text, ONE primary (lavender), two supporting */
@@ -16,8 +16,8 @@
   --color-surface: #221a2e; /* cards */
   --color-field: #2c2239; /* inputs */
   --color-on-primary: #15101c;
-  --color-lime: #d4e157; /* calamansi, fills only */
-  --color-on-lime: #1b1522;
+  --color-gold: #fcd116; /* flag-inspired gold */
+  --color-on-gold: #1b1522;
   --color-chili: #ff7a59; /* sparingly */
 
   /* Type */

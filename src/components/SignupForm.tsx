@@ -12,7 +12,7 @@ export function SignupForm({ onDark = false }: { onDark?: boolean }) {
 
   const field =
     "block w-full min-h-14 rounded-sm border-[3px] border-ink bg-field px-4 text-base text-ink placeholder:text-ink-soft " +
-    (onDark ? "focus-visible:outline-lime" : "");
+    (onDark ? "focus-visible:outline-gold" : "");
   const label = "mb-1 block text-sm font-semibold " + (onDark ? "text-on-primary" : "text-ink");
   const errText = onDark ? "text-on-primary underline" : "text-chili";
 
@@ -42,7 +42,7 @@ export function SignupForm({ onDark = false }: { onDark?: boolean }) {
         <input
           type="checkbox" name="consent" required
           aria-invalid={err?.field === "consent"}
-          className={"mt-0.5 size-6 shrink-0 accent-primary " + (onDark ? "focus-visible:outline-lime" : "")}
+          className={"mt-0.5 size-6 shrink-0 accent-primary " + (onDark ? "focus-visible:outline-gold" : "")}
         />
         <span>Yes, email me about Paradise shows and news. I can unsubscribe anytime.</span>
       </label>
@@ -52,7 +52,7 @@ export function SignupForm({ onDark = false }: { onDark?: boolean }) {
         className={
           "min-h-14 rounded-sm border-[3px] border-ink px-6 text-lg font-bold shadow-pop transition-transform active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:cursor-wait disabled:opacity-70 " +
           (onDark
-            ? "bg-lime text-on-lime focus-visible:outline-lime"
+            ? "bg-gold text-on-gold focus-visible:outline-gold"
             : "bg-primary text-on-primary hover:bg-primary-deep")
         }
       >

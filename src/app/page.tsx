@@ -70,7 +70,7 @@ export default function Home() {
           </ul>
         </section>
 
-        <section aria-labelledby="first" className="border-y-[3px] border-ink bg-lime text-on-lime">
+        <section aria-labelledby="first" className="border-y-[3px] border-ink bg-gold text-on-gold">
           <div className="mx-auto max-w-6xl px-5 py-10 sm:px-10 sm:py-14">
             <h2
               id="first"
