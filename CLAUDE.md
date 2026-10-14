@@ -31,6 +31,9 @@ Absolute naming rules:
 
 Gating mechanics: events, artists, sponsors, and landing pages each have a `published` flag and, where relevant, `venue_public` / `date_public` flags that default to **false**. Public pages must never render a venue or date unless its flag is true.
 
+## Reusability (directions section 4A, added 2026-10-14)
+Keep generic code (signup/Klaviyo/Supabase logic, later calendar, statements, PDF, audit) in `src/lib/generic/` with no Paradise names, copy, or data; brand and content live in `src/config/` and content files. No real fan/artist data in repo or tests. No license file or ownership claims; code ownership is pending counsel (`CODE_OWNERSHIP.md`). Keep `BUILD_LOG.md` and `DEPENDENCIES.md` current.
+
 ## Stack
 - Next.js (App Router, TypeScript), Tailwind CSS, deployed on Vercel.
 - Supabase: Postgres, Auth (magic link + email/password), Storage, Row Level Security on every table.

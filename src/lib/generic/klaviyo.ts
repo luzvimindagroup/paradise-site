@@ -6,6 +6,8 @@ const REVISION = "2024-10-15";
 export type KlaviyoProfile = {
   email: string;
   zip: string;
+  /** Label Klaviyo shows as the subscription source, e.g. "Example website". Comes from config. */
+  source: string;
   properties: Record<string, string | string[] | boolean | null>;
 };
 
@@ -39,7 +41,7 @@ export async function syncProfile(p: KlaviyoProfile): Promise<void> {
       data: {
         type: "profile-subscription-bulk-create-job",
         attributes: {
-          custom_source: "Paradise Sessions website",
+          custom_source: p.source,
           profiles: {
             data: [{
               type: "profile",

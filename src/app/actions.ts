@@ -2,10 +2,10 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { CONSENT_TEXT, WELCOME_COOKIE } from "@/config/signup";
-import { klaviyoConfigured, syncProfile, updateProperties } from "@/lib/klaviyo";
-import { looksLikeBot, parseSignup, parseWelcome } from "@/lib/signup/validate";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { CONSENT_TEXT, KLAVIYO_SOURCE_LABEL, WELCOME_COOKIE } from "@/config/signup";
+import { klaviyoConfigured, syncProfile, updateProperties } from "@/lib/generic/klaviyo";
+import { looksLikeBot, parseSignup, parseWelcome } from "@/lib/generic/signup/validate";
+import { createAdminClient } from "@/lib/generic/supabase/admin";
 
 export type JoinState =
   | { status: "idle" }
@@ -66,6 +66,7 @@ export async function joinList(_prev: JoinState, formData: FormData): Promise<Jo
       await syncProfile({
         email: s.email,
         zip: s.zip,
+        source: KLAVIYO_SOURCE_LABEL,
         properties: {
           language: s.language,
           language_assumed: s.languageAssumed,

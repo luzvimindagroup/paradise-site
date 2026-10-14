@@ -12,6 +12,9 @@ export const HOW_HEARD = ["Instagram", "TikTok", "Friend or family", "Ad", "Even
 export const CONSENT_TEXT =
   "Yes, email me about Paradise shows and news. I can unsubscribe anytime.";
 
+// Label shown in Klaviyo as where the subscription came from.
+export const KLAVIYO_SOURCE_LABEL = "Paradise Sessions website";
+
 export const DEFAULT_LANGUAGE = "English";
 // Cookie that lets a brand-new signup fill in their own /welcome answers.
 export const WELCOME_COOKIE = "ps_sub";

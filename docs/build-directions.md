@@ -46,6 +46,18 @@ Explain each choice in plain language when you propose it. Alan is new to Claude
 - Keep a `README.md` that explains how to run the project locally and how to deploy.
 - Prefer asking Alan one clear question over guessing on anything in section 14.
 
+## 4A. Reusability: keep generic code separate from Paradise-specific code
+
+Why: Alan may later reuse the generic parts for Villegas Digital client sites. Paradise and Villegas Digital are separate businesses, so the boundary has to be clean from the start. Do not build multi-customer features; this is only about separation.
+
+- **Generic modules (reusable):** event calendar logic, signup and RSVP/waitlist flow, artist profile structure, landing-page template, statement calculation, PDF export, permission and audit-log patterns. Put these in clearly named, self-contained folders (for example `/lib/generic/` or `/packages/core/`) with no Paradise names, copy, or data inside.
+- **Paradise-specific content (stays with Paradise):** brand name, logo, colors, copy, artist records, fan and signup data, show data, flyers and photos, tracking IDs, and any contract or policy text. Put these in separate config and content files (for example `/config/paradise.ts` and `/content/`), not inside the generic modules.
+- **Configuration, not hardcoding:** the generic modules read brand name, colors, language list, email-service keys, and legal text from configuration. A search of the generic folders for "Paradise" or "Luzviminda" should return nothing.
+- **No customer data in the repo:** no real fan emails, artist details, or statements in source control, seed files, or tests. Use fake sample data only.
+- **Licensing and ownership notes:** do not add a license file or claim ownership in file headers. Ownership of the code (Luzviminda Group or Villegas Digital) is an open question for counsel; see section 14. Keep a `CODE_OWNERSHIP.md` stub that says "ownership pending counsel" and lists which folders are generic and which are Paradise-specific.
+- **Build log:** keep a `BUILD_LOG.md` that records each module built, the date, and whether it is generic or Paradise-specific. It will help write the case study and any later client proposal.
+- **Dependencies:** prefer open-source libraries with permissive licenses, and list each one with its license in `DEPENDENCIES.md`, so reuse does not hit licensing surprises later.
+
 ## 5. Public pages
 
 **Home.** Lead with the next shows in a date-sorted list, one clear button per show, and an email signup. Short one-line description of the series. No long SEO paragraphs.
@@ -155,6 +167,7 @@ Stop after each step and summarize.
 - A search of the codebase and database finds no bank numbers, SSNs, or stored W-9 files.
 - No venue names, sponsor logos, or investor language appear on the live site.
 - The README lets someone else run, deploy, and restore the project.
+- Generic modules contain no Paradise names, data, or copy, and `CODE_OWNERSHIP.md`, `BUILD_LOG.md`, and `DEPENDENCIES.md` exist and are current.
 
 ## 14. Open items for Alan (do not decide these yourself)
 
@@ -164,3 +177,4 @@ Stop after each step and summarize.
 - Which ticketing platform to link to (questions to ask: fee for a small room, buyer email export with consent, acceptance of a first-time promoter).
 - Final language list for signup, pending native-speaker review.
 - Brand colors and logo, once the Paradise identity is finalized.
+- Which entity owns the code (Luzviminda Group or Villegas Digital), and the written IP assignment and license terms, with counsel. Do not decide this yourself.

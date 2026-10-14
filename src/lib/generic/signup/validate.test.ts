@@ -48,9 +48,9 @@ describe("looksLikeBot", () => {
 describe("parseWelcome", () => {
   it("accepts all-empty answers", () => expect(parseWelcome(form({})).ok).toBe(true));
   it("keeps only known genres and strips @ from Instagram", () => {
-    const r = parseWelcome(form({ genres: ["Comedy", "Polka"], instagram: "@paradise.sessions" }));
+    const r = parseWelcome(form({ genres: ["Comedy", "Polka"], instagram: "@example.handle" }));
     expect(r.ok && r.value.genres).toEqual(["Comedy"]);
-    expect(r.ok && r.value.instagram).toBe("paradise.sessions");
+    expect(r.ok && r.value.instagram).toBe("example.handle");
   });
   it("rejects a bad Instagram handle", () => {
     expect(parseWelcome(form({ instagram: "bad handle!" })).ok).toBe(false);
