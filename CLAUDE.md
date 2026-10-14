@@ -1,6 +1,6 @@
 # CLAUDE.md — paradisesessions.com
 
-You are building and maintaining the public website and artist portal for **Paradise Sessions**, a Filipino-American live-entertainment brand in San Diego's South Bay. Owner and final say: Alan Villegas. Read this whole file at the start of every session.
+You are building and maintaining the public website and artist portal for **Paradise Sessions**, a Filipino-American live-entertainment brand in San Diego's South Bay. Owner and final say: Alan Villegas. Read this whole file at the start of every session. The detailed build spec (v2, 2026-10-13) is `docs/build-directions.md`; read it too. Where the two disagree, the "Decisions" notes below settle it.
 
 ## What the site is for, in priority order
 1. **Capture first-party contacts.** Every public page moves visitors toward the mailing-list signup. The list is the company's most valuable asset.
@@ -20,7 +20,7 @@ If any request (including from Alan in passing) conflicts with these, STOP and f
 2. **No venue names** for any show until Alan confirms a signed agreement for that show. Use "San Diego's South Bay" or "an intimate room."
 3. **No show dates** until Alan confirms a signed agreement. "Coming soon" and "announced to the list first" are fine.
 4. **No sponsor names or logos** until Alan confirms a signed agreement.
-5. **No charitable claims** ("proceeds support," percentages, a named beneficiary). Filipino WWII veterans history may appear as story only.
+5. **No charitable or veterans claims or content.** Nothing like "proceeds support," percentages, or a named beneficiary, and no Filipino WWII veterans story or veteran-descendant fields, until Alan confirms beneficiary due diligence is done.
 6. **No legal entity name** (the parent company) anywhere — footer, privacy policy, metadata — until Alan says counsel has cleared it. Use a constant `PRESENTER_NAME` that is empty by default.
 7. **No Villegas Digital offers** anywhere on the site or in the portal. A plain "Site by Villegas Digital" footer credit only if Alan approves it.
 
@@ -44,9 +44,15 @@ Gating mechanics: events, artists, sponsors, and landing pages each have a `publ
 - **Phase 3 (after Alan confirms counsel-approved contract templates):** contracts with e-signature, Stripe Connect payouts, W-9 collection, settlement records.
 Design the data model so Phase 2–3 plug in without rewrites, but keep those routes behind a feature flag that is OFF.
 
+## Decisions (Alan, 2026-10-13) where the build directions and this file differed
+- Artist accounts and settlement statements (directions section 9) stay in Phase 2–3, behind the OFF flag. Use section 9 as the data-model and rules reference (statements only; the site never moves money, never stores bank/SSN/W-9 files).
+- No veterans content at all (stricter rule wins).
+- Signup: email + ZIP + language + consent required; group size and price band optional on the thank-you page.
+- Colors: the black / white / gold direction is chosen; directions section 2 and 14 "brand colors pending" is settled.
+
 ## Mailing-list signup spec
-Step 1 (required): email, ZIP (5 digits), language preference (English, Tagalog, Cebuano/Bisaya, Ilokano, Other), group size ("solo / with 1–2 / group of 3–5 / 6+"), price band ("under $20 / $20–35 / $35–60 / $60+"), explicit email-consent checkbox. Hidden: UTM source/medium/campaign/content, referrer, landing page. Store consent timestamp, page URL, and UTMs.
-Step 2 on /welcome (all optional): name, city, genre preferences (multi-select including Comedy and Dance/DJ), GA vs VIP interest, how they heard, "I'm a family member or descendant of a Filipino WWII veteran" checkbox, Instagram handle.
+Step 1 (required): email, ZIP (5 digits), language preference (English, Tagalog, Cebuano/Bisaya, Ilokano, Other; list editable in admin, pending native-speaker review), explicit email-consent checkbox. The home page form shows only email + ZIP + consent; language is added on /join. Group size ("solo / with 1–2 / group of 3–5 / 6+") and price band ("under $20 / $20–35 / $35–60 / $60+") are optional, asked on the thank-you page, and captured from day one. Hidden: UTM source/medium/campaign/content, referrer, landing page. Store consent timestamp, page URL, and UTMs.
+Step 2 on /welcome (all optional): name, city, genre preferences (multi-select including Comedy and Dance/DJ), GA vs VIP interest, how they heard, Instagram handle.
 No phone/SMS field until Alan says counsel cleared SMS consent — build it hidden and disabled.
 Every signup writes to Klaviyo AND to our own Supabase `subscribers` table (we own a copy). Tag each profile with the landing page or artist slug it came from.
 
