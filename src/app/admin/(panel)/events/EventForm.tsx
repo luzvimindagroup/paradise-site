@@ -2,7 +2,7 @@
 
 import { usePreservedForm } from "@/lib/generic/forms/usePreservedForm";
 import { useId, useState } from "react";
-import { MAX_IMAGE_BYTES } from "@/lib/generic/events/validate";
+import { MAX_IMAGE_BYTES } from "@/lib/generic/images/validate";
 import { saveEvent, type EventFormState } from "./actions";
 
 export type EventFormValues = {

@@ -13,6 +13,7 @@ async function Shell({ children }: { children: React.ReactNode }) {
         <nav aria-label="Admin" className="-ml-3 flex flex-wrap">
           <Link href="/admin" className={nav}>Dashboard</Link>
           <Link href="/admin/events" className={nav}>Events</Link>
+          <Link href="/admin/artists" className={nav}>Artists</Link>
           <Link href="/admin/messages" className={nav}>Messages</Link>
         </nav>
         <form action={signOut} className="flex items-center gap-3 text-sm">

@@ -274,6 +274,22 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 **The fix.** `lib/generic/forms/usePreservedForm.ts` submits the form through `onSubmit` instead of `action=`, so the fields stay as typed (including a chosen photo). All five forms use it: signup, welcome, contact, admin login, and event. Trade-off: the forms now need JavaScript to submit (no "plain HTML" fallback). If someone taps Submit before the page has finished loading, nothing is saved, but because the forms are marked `method="post"` their typed email can't leak into the web address.
 
 ""
+## 10f. Artists
+
+**What you can do:** in `/admin/artists`, add, edit, publish, and unpublish artists. Each has a name, web address, discipline (Music, Comedy, Dance, DJ, Other: genre-neutral on purpose), neighborhood, one line about them, links, a photo with alt text, and a permission record. The public site gets `/artists` (a photo grid, A to Z) and `/artists/[slug]` (profile with their links and a signup form tagged with that artist, so you can see whose page brought signups).
+
+**The permission gate.** Your rule is that no artist appears publicly without written permission and their photo. It is enforced three times, so a mistake in one place can't expose someone:
+1. **The admin form** refuses to save "Published" unless "Written permission on file", its date, a photo, and alt text are all present.
+2. **The public gate** (`toPublicArtist` in `lib/generic/artists/public.ts`): even if a row says published, it returns nothing without permission and a photo. It also never includes the permission date.
+3. **The database** has a check that refuses a published row without permission, a date, and a photo.
+The site stores only the *date* of permission. Keep the actual written document (text, email, form) in your own records.
+
+**Links.** Fixed types for the big platforms (Instagram, TikTok, YouTube, Spotify, Apple Music, SoundCloud, Facebook, Website) plus three "Anything else" slots with a name you choose (Bandcamp, a show reel...). Every link must be a full `https://` address, and each fixed type must belong to its own site (an "Instagram" link has to be on instagram.com), which catches pasted-in mistakes. Links open with `rel="noopener noreferrer"`. Stored as a list in one database column (`links`).
+
+**Photos** use the same shared uploader as events (`lib/generic/images/`): 4 MB, real file-type check, into a separate public bucket `artist-images`. Favor warm or white-lit photos (brand color rule).
+
+**Files:** database `supabase/migrations/20261015010000_create_artists.sql`; engine `lib/generic/artists/` (links, gate, validation) plus `lib/generic/images/` and `lib/generic/slug.ts` (shared); wiring `lib/artists.ts`; options in `config/artists.ts`; admin `app/admin/(panel)/artists/`; public `app/artists/`, `components/ArtistCard.tsx`.
+
 ## 11. The project paperwork
 
 - **`CLAUDE.md`**: the standing rules Claude reads every session: the seven compliance hard stops, naming rules (never "Sama Soul", never "PH", never "Paradise Presents"), design rules, and how to work with you (plan first, small branches, screenshot every UI change, never commit secrets).
@@ -323,3 +339,4 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 | 2026-10-15 | Added section 10d: events (admin, public pages, the date/venue gate, Pacific time, photos, caching). |
 | 2026-10-15 | Added 10e: forms keep typed values on error. Photo limit is 4 MB (Next's 1 MB default was rejecting photos). Admin checks marked request-time. |
 | 2026-10-15 | Events code review: strict date checking (no Feb 31), real file-type check on photos, update-of-a-missing-event handled, 5-minute event cache, forms POST-only, event page canonical/OG tags. Open item 12 added. |
+| 2026-10-15 | Added section 10f: artists (permission gate in three places, fixed link types, shared image uploader). |

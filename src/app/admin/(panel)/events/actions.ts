@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { TIMEZONE } from "@/config/site";
 import { EVENTS_TAG, IMAGE_BUCKET } from "@/lib/events";
 import { requireAdmin } from "@/lib/generic/admin/guard";
-import { IMAGE_TYPES, checkImage, parseEvent, sniffImage } from "@/lib/generic/events/validate";
+import { parseEvent } from "@/lib/generic/events/validate";
+import { uploadImage } from "@/lib/generic/images/upload";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
 
 export type EventFormState = { status: "idle" } | { status: "error"; message: string };
@@ -34,14 +35,9 @@ export async function saveEvent(_prev: EventFormState, formData: FormData): Prom
   let newUpload: string | null = null;
   const file = formData.get("image");
   if (file instanceof File && file.size > 0) {
-    const problem = checkImage(file);
-    if (problem) return fail(problem);
-    const bytes = await file.arrayBuffer();
-    const realType = sniffImage(new Uint8Array(bytes)); // trust the bytes, not the label the browser sent
-    if (!realType) return fail("That file isn't a real JPG, PNG, or WebP image.");
-    const path = `${crypto.randomUUID()}.${IMAGE_TYPES[realType]}`;
-    const { error } = await db.storage.from(IMAGE_BUCKET).upload(path, bytes, { contentType: realType });
-    if (error) return fail("The photo couldn't be uploaded. Please try again.");
+    const up = await uploadImage(db, IMAGE_BUCKET, file);
+    if (!up.ok) return fail(up.message);
+    const path = up.path;
     newUpload = path;
     imagePath = path;
   } else if (v.removeImage) {
