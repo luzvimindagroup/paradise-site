@@ -40,6 +40,7 @@ export function EventForm({ values }: { values: EventFormValues }) {
       <div>
         <label htmlFor={`${uid}-desc`} className={label}>Description</label>
         <textarea id={`${uid}-desc`} name="description" rows={5} defaultValue={values.description} className={`${field} py-3`} />
+        <p className={help}>Shown publicly as written. Don&apos;t mention the venue or date here until their boxes below are on.</p>
       </div>
 
       <fieldset className="grid gap-4 rounded-sm border-[3px] border-ink p-4">
