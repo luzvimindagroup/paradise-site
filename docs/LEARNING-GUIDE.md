@@ -201,6 +201,32 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 
 ---
 
+## 10b. The admin area (`/admin`)
+
+**What it is:** a private part of the site for you only. Today it has a dashboard (signup counts, share inside the South Bay ZIP list, messages count, and a warning count of Klaviyo syncs that failed) and a Messages page listing what people sent through `/contact`. Events, Artists, and Landing pages will be added here next.
+
+**How you sign in: a "magic link" (no password).**
+1. You type your email at `/admin/login`.
+2. The server checks the **`admins` table** (a short list of allowed emails). If you're on it, Supabase Auth emails you a one-time link. If you're not, nothing is sent, but the page says the same thing either way, so outsiders can't learn who the admins are.
+3. You click the link. It lands on `/admin/auth/confirm`, which swaps the one-time code for a signed-in session (stored in a cookie) and sends you to `/admin`.
+4. The link only works in the **same browser** you asked from. That's a deliberate security feature (called PKCE): a stolen link is useless on another device.
+
+**Three layers of locking (each does a different job):**
+| Layer | File | What it does |
+|---|---|---|
+| The "proxy" | `src/proxy.ts` + `lib/generic/supabase/proxy.ts` | Runs before any `/admin` page. Refreshes your session and bounces signed-out visitors to the login page. In this version of Next.js, "middleware" has been renamed "proxy". It's a convenience, not the real lock. |
+| The guard | `lib/generic/admin/guard.ts` (`requireAdmin`) | The real lock. Every admin page asks Supabase "who is this?" and then checks that email is in `admins`. Anyone else is sent to login. |
+| The database | RLS on `admins`, `subscribers`, `contact_messages` | Even if someone got past the first two, the public database key can't read these tables. |
+
+**Pieces and where they live**
+- `app/admin/login/`: login page, form, and the server action that sends the link.
+- `app/admin/auth/confirm/route.ts`: receives the emailed link.
+- `app/admin/(panel)/`: everything that needs sign-in. The parentheses make a "route group": it shares the guarded layout (`layout.tsx`) without adding "(panel)" to the web address. Putting the login page *outside* the group avoids a loop where the login page would demand a login.
+- `config/south-bay.ts`: the ZIP list for "in the South Bay" (still to be confirmed by you, per the brief).
+- `/admin` is marked noindex even after the site goes live, and `robots.txt` disallows it.
+
+**Why the service key is used:** admin pages read the tables with the server-only key (see section 8), which is safe because the guard runs first.
+
 ## 11. The project paperwork
 
 - **`CLAUDE.md`**: the standing rules Claude reads every session: the seven compliance hard stops, naming rules (never "Sama Soul", never "PH", never "Paradise Presents"), design rules, and how to work with you (plan first, small branches, screenshot every UI change, never commit secrets).
@@ -227,7 +253,9 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 | 2 | **Error color.** Errors use coral ("chili"). Rule clarified by Alan 2026-10-14: avoid red and blue because of gang affiliation, but an occasional use is fine as long as neither predominates. Coral is a minor, error-only use. | Low priority. Alan will revisit later. |
 | 3 | **Privacy page** doesn't yet mention contact messages, or the browser memory used to remember where a visitor first came from. | Needs to be in the version counsel reviews. Stay up to date: update the placeholder whenever a feature collects new data. |
 | 4 | **Gold-on-black check** with locals before the palette is final. | Open |
-| 5 | **Contact migration** not yet applied; no email alert when a message arrives. | Open |
+| 5 | ~~Contact migration~~ applied 2026-10-14 and tested end to end. **No email alert yet** when a message arrives (check `/admin/messages`). | Partly done |
+| 7 | **Supabase email sender** is rate-limited (a few emails per hour): fine for admin sign-in, but connect Resend before real use. | Later |
+| 8 | **South Bay ZIP list** (`config/south-bay.ts`) needs Alan's check. | Open |
 | 6 | **Language list** awaits native-speaker review. | Open |
 
 ---
@@ -238,3 +266,4 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 |---|---|
 | 2026-10-14 | First version. Explains everything built so far: scaffold, design tokens, home, signup flow, Supabase, Klaviyo, Join/Welcome/Privacy, About/Contact/Terms. |
 | 2026-10-14 | Open items reworked: double opt-in is a Klaviyo setting (to verify), color rule clarified, privacy page to be kept in step with new data collection. |
+| 2026-10-14 | Added section 10b: admin area, magic-link login, the three locks. Open items updated. |
