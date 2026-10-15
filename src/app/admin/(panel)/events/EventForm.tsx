@@ -68,10 +68,10 @@ export function EventForm({ values }: { values: EventFormValues }) {
       </div>
 
       <fieldset className="grid gap-4 rounded-sm border-[3px] border-ink p-4">
-        <legend className="px-2 text-sm font-bold">Photo</legend>
+        <legend className="px-2 text-sm font-bold">Photo (optional)</legend>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {values.imageUrl && <img src={values.imageUrl} alt={values.imageAlt} className="max-h-48 w-auto rounded-sm" />}
-        <input aria-label="Photo file" type="file" name="image" accept="image/jpeg,image/png,image/webp" className="text-sm" />
+        <input aria-label="Photo file" type="file" name="image" accept="image/jpeg,image/png,image/webp" className="block w-full text-sm file:mr-4 file:min-h-11 file:cursor-pointer file:rounded-sm file:border-[3px] file:border-ink file:bg-primary file:px-4 file:font-bold file:text-on-primary" />
         <p className={help}>JPG, PNG, or WebP, under 5 MB. Real photos of real people need their permission.</p>
         <div>
           <label htmlFor={`${uid}-alt`} className={label}>Describe the photo (alt text)</label>
