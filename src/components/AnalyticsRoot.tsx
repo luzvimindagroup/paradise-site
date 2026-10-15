@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Script from "next/script";
 import { useEffect, useSyncExternalStore } from "react";
-import { readConsent, subscribeConsent, writeConsent, type Consent } from "@/lib/generic/analytics/consent";
+import { readConsent, resetConsent, subscribeConsent, writeConsent, type Consent } from "@/lib/generic/analytics/consent";
 import { PENDING_COOKIE, parsePending } from "@/lib/generic/analytics/pending";
 import { track } from "@/lib/generic/analytics/track";
 
@@ -18,7 +18,7 @@ const useConsent = (): Consent | "unknown" =>
 function useFlushPending(consent: Consent | "unknown") {
   const pathname = usePathname(); // this component lives in the layout, so re-check after every page change
   useEffect(() => {
-    if (consent === "unknown" || consent === null) return; // wait until they choose; the note lasts 5 minutes
+    if (!GTM_ID || consent === "unknown" || consent === null) return; // wait until they choose; the note lasts 5 minutes
     const match = document.cookie.split("; ").find((c) => c.startsWith(`${PENDING_COOKIE}=`));
     if (!match) return;
     document.cookie = `${PENDING_COOKIE}=; Max-Age=0; Path=/`;
@@ -67,5 +67,15 @@ export function AnalyticsRoot() {
         </section>
       )}
     </>
+  );
+}
+
+/** A link anyone can use to change their mind. Renders only when analytics is switched on. */
+export function CookieSettingsButton({ className }: { className?: string }) {
+  if (!GTM_ID) return null;
+  return (
+    <button type="button" onClick={resetConsent} className={className}>
+      Cookie settings
+    </button>
   );
 }

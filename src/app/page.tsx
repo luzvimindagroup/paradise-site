@@ -1,3 +1,4 @@
+import { CookieSettingsButton } from "@/components/AnalyticsRoot";
 import { EventHero } from "@/components/EventHero";
 import { SignupForm } from "@/components/SignupForm";
 import { FEATURED_EVENT } from "@/config/featured-event";
@@ -105,6 +106,7 @@ export default function Home() {
           {[["About", "/about"], ["Contact", "/contact"], ["Privacy", "/privacy"], ["Terms", "/terms"]].map(([t, h]) => (
             <a key={h} href={h} className="inline-flex min-h-11 items-center underline">{t}</a>
           ))}
+          <CookieSettingsButton className="inline-flex min-h-11 items-center underline" />
         </nav>
       </footer>
     </>

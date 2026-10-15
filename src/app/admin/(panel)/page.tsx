@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SOUTH_BAY_ZIPS } from "@/config/south-bay";
+import { requireAdmin } from "@/lib/generic/admin/guard";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
 
 export const metadata: Metadata = { title: "Admin dashboard" };
@@ -7,6 +8,7 @@ export const metadata: Metadata = { title: "Admin dashboard" };
 const count = (n: number | null) => (n ?? 0).toLocaleString();
 
 export default async function DashboardPage() {
+  await requireAdmin(); // the page checks too, not just the layout
   const db = createAdminClient();
   const head = { count: "exact", head: true } as const;
   const [all, southBay, failed, messages] = await Promise.all([

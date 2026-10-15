@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { requireAdmin } from "@/lib/generic/admin/guard";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
 
 export const metadata: Metadata = { title: "Messages" };
 
 export default async function MessagesPage() {
+  await requireAdmin(); // the page checks too, not just the layout
   const { data, error } = await createAdminClient()
     .from("contact_messages")
     .select("id, category, name, email, message, created_at")

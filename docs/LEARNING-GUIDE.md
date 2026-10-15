@@ -229,7 +229,7 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 
 ## 10c. Cookie banner and analytics
 
-**What it does:** shows a small bar at the bottom ("We use cookies for anonymous traffic stats...") with **Accept** and **Decline** (equal-size buttons). Nothing is tracked unless the visitor taps Accept. The choice is remembered in their browser (`ps_consent`).
+**What it does:** shows a small bar at the bottom ("We use cookies for anonymous traffic stats...") with **Accept** and **Decline** (equal-size buttons). Nothing is tracked unless the visitor taps Accept. The choice is remembered in their browser (`consent_choice`).
 
 **It is dormant right now.** It only switches on when a Google Tag Manager ID is set as `NEXT_PUBLIC_GTM_ID` (looks like `GTM-XXXXXXX`; add it in `.env.local` and in Vercel's settings). With no ID: no banner, no Google scripts, no tracking. When you get your GTM container and GA4 property (they belong in the company Google account, per the brief), that one setting turns it on.
 
@@ -238,9 +238,11 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 - Our code puts events in the **data layer**, a list in the browser that GTM watches. Three events: `waitlist_submit` (new signup, with the source page), `profile_complete` (finished the optional questions), `contact_submit` (with the category, e.g. Press). **No personal data goes in any event.**
 - The GTM script isn't even downloaded until someone accepts.
 
-**The tricky one: `waitlist_submit`.** A signup is processed on the server, which then redirects, so the browser never sees it happen. So the server leaves a note in a 5-minute cookie (`ps_evt`); the next page reads the note, reports the event once, and deletes it. A repeat signup with the same email leaves no note, so people aren't counted twice. If the visitor hasn't answered the banner yet, the note waits until they do.
+**The tricky one: `waitlist_submit`.** A signup is processed on the server, which then redirects, so the browser never sees it happen. So the server leaves a note in a 30-minute cookie (`pending_event`); the next page reads the note, reports the event once, and deletes it. A repeat signup with the same email leaves no note, so people aren't counted twice. If the visitor hasn't answered the banner yet, the note waits until they do.
 
 **Files:** `components/AnalyticsRoot.tsx` (banner, GTM loading, reading the note), `lib/generic/analytics/` (`consent.ts` remembers the choice, `track.ts` sends events only if allowed, `pending.ts` the note format, with tests), and one-line hooks in `WelcomeForm`, `ContactForm`, and `app/actions.ts`.
+
+**Changing your mind:** a "Cookie settings" link (home footer and privacy page) forgets the choice and reloads, so the banner asks again and the Google script is gone. It also only appears when analytics is switched on.
 
 **Privacy page** was updated in the same change to describe contact messages, browser memory, the short-lived cookie, and analytics (still a placeholder for counsel).
 
@@ -269,6 +271,7 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 | 1 | **Double opt-in.** The `/welcome` wording ("Check your email to confirm") is right only if the Klaviyo list is double opt-in. | Alan believes it's switched on. **Verify with a test signup** once Klaviyo keys are connected: the confirmation email should arrive, and the profile should stay unsubscribed until the click. |
 | 2 | **Error color.** Errors use coral ("chili"). Rule clarified by Alan 2026-10-14: avoid red and blue because of gang affiliation, but an occasional use is fine as long as neither predominates. Coral is a minor, error-only use. | Low priority. Alan will revisit later. |
 | 3 | **Privacy page** placeholder now covers contact messages, browser memory, the signup cookie, and analytics (updated 2026-10-14). | Counsel still has to review. Keep updating it whenever a feature collects new data. |
+| 10 | **Hardening to do before launch** (from the 2026-10-14 code review, deliberately deferred): rate-limit signups and contact (bots that skip the hidden timer field are only stopped by the honeypot); retry Klaviyo syncs that failed (the dashboard counts them, nothing retries yet); restrict where the login link may point (Supabase's redirect list already limits it); `AttributionFields` remembers UTMs only from the page the visitor first loaded. | Build Order step 7 |
 | 9 | **No GTM/GA4 yet.** Analytics is built but dormant until `NEXT_PUBLIC_GTM_ID` is set. Needs the company Google account. | Waiting on Alan |
 | 4 | **Gold-on-black check** with locals before the palette is final. | Open |
 | 5 | ~~Contact migration~~ applied 2026-10-14 and tested end to end. **No email alert yet** when a message arrives (check `/admin/messages`). | Partly done |
@@ -286,3 +289,4 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 | 2026-10-14 | Open items reworked: double opt-in is a Klaviyo setting (to verify), color rule clarified, privacy page to be kept in step with new data collection. |
 | 2026-10-14 | Added section 10b: admin area, magic-link login, the three locks. Open items updated. |
 | 2026-10-14 | Added section 10c: cookie banner, consent, GTM, and the three tracking events. Privacy open item updated. |
+| 2026-10-14 | Code review of everything so far. Fixed: crash on a tampered cookie, no way to withdraw cookie consent, admin pages now check admin rights themselves, Klaviyo calls time out, a failed bookkeeping update no longer breaks a signup. Deferred items listed as open item 10. |

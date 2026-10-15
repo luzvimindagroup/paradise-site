@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CookieSettingsButton } from "@/components/AnalyticsRoot";
 
 export const metadata: Metadata = { title: "Privacy" };
 
@@ -19,6 +20,7 @@ export default function PrivacyPage() {
         <p>After you join the list we place a short-lived cookie (about an hour) so you can add optional answers on the next page.</p>
         <p>You can unsubscribe from any email at any time. We don&apos;t collect phone numbers.</p>
       </div>
+      <CookieSettingsButton className="mt-6 inline-flex min-h-11 items-center text-sm font-bold underline" />
     </main>
   );
 }

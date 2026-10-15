@@ -85,14 +85,18 @@ export async function joinList(_prev: JoinState, formData: FormData): Promise<Jo
       klaviyoStatus = "failed"; // saved in our database; retried later. Never log the error (can contain the email).
     }
   }
-  await db
-    .from("subscribers")
-    .update({ klaviyo_status: klaviyoStatus, klaviyo_synced_at: klaviyoStatus === "synced" ? new Date().toISOString() : null })
-    .eq("id", data.id);
+  try {
+    await db
+      .from("subscribers")
+      .update({ klaviyo_status: klaviyoStatus, klaviyo_synced_at: klaviyoStatus === "synced" ? new Date().toISOString() : null })
+      .eq("id", data.id);
+  } catch {
+    // Bookkeeping only. The person is already saved, so they still get their thank-you page.
+  }
 
   // Note for the browser to report "waitlist_submit" once (only for brand-new signups, never repeats).
   (await cookies()).set(PENDING_COOKIE, encodePending("waitlist_submit", s.sourceSlug), {
-    httpOnly: false, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 300, path: "/",
+    httpOnly: false, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 1800, path: "/",
   });
   (await cookies()).set(WELCOME_COOKIE, data.id, {
     httpOnly: true,

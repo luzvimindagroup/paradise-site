@@ -14,5 +14,6 @@ describe("pending events", () => {
     expect(parsePending("just-one-part")).toBeNull();
     expect(parsePending("bad event|x")).toBeNull();
     expect(parsePending("e|<script>")).toBeNull();
+    expect(parsePending("%E0%A4%A")).toBeNull(); // broken percent-escape must not throw
   });
 });

@@ -2,6 +2,7 @@ import "server-only";
 
 const API = "https://a.klaviyo.com/api";
 const REVISION = "2024-10-15";
+const TIMEOUT = () => AbortSignal.timeout(8000); // a slow Klaviyo must not hang a visitor
 
 export type KlaviyoProfile = {
   email: string;
@@ -28,6 +29,7 @@ export async function syncProfile(p: KlaviyoProfile): Promise<void> {
   const upsert = await fetch(`${API}/profile-import/`, {
     method: "POST",
     headers: headers(),
+    signal: TIMEOUT(),
     body: JSON.stringify({
       data: { type: "profile", attributes: { email: p.email, location: { zip: p.zip }, properties: p.properties } },
     }),
@@ -37,6 +39,7 @@ export async function syncProfile(p: KlaviyoProfile): Promise<void> {
   const sub = await fetch(`${API}/profile-subscription-bulk-create-jobs/`, {
     method: "POST",
     headers: headers(),
+    signal: TIMEOUT(),
     body: JSON.stringify({
       data: {
         type: "profile-subscription-bulk-create-job",
@@ -65,6 +68,7 @@ export async function updateProperties(email: string, properties: KlaviyoProfile
   const res = await fetch(`${API}/profile-import/`, {
     method: "POST",
     headers: headers(),
+    signal: TIMEOUT(),
     body: JSON.stringify({ data: { type: "profile", attributes: { email, properties } } }),
   });
   if (!res.ok) throw new Error(`klaviyo update ${res.status}`);
