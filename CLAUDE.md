@@ -72,6 +72,7 @@ Every signup writes to Klaviyo AND to our own Supabase `subscribers` table (we o
 - Start every non-trivial task in **plan mode**: show the plan in plain English and wait for "go."
 - Make small changes on a branch, one feature at a time. Commit with clear messages. Never push straight to `main`.
 - After every UI change, use Playwright to screenshot the page at phone (390px) and desktop (1440px) widths and check it before saying you're done.
+- Alan is learning as he builds and must be able to explain every part. After each feature, add what was built and why to `docs/LEARNING-GUIDE.md` (plain English, with a changelog line) and walk him through it before moving on.
 - Explain what you changed in two or three plain sentences, no jargon. Say what Alan should click to see it (the Vercel preview link).
 - Never put secrets (API keys) in code or commits. Use `.env.local` (git-ignored) locally and Vercel environment variables in production. Keep `.env.example` with names only.
 - Never run destructive database commands (drop, delete, truncate) on production. Use a development Supabase branch or project for experiments.

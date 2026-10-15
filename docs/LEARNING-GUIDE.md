@@ -1,0 +1,237 @@
+# Learning guide: how the Paradise Sessions site works
+
+Written for Alan, who owns this project and wants to be able to explain every part of it.
+Read it top to bottom once, then use it as a reference. **Claude updates this file every time a feature is added** (see the "Changelog" at the bottom), so it always matches the code.
+
+Last updated: 2026-10-14 (covers everything built through the About, Contact, and Terms pages).
+
+---
+
+## 1. The big picture in one minute
+
+The site has one job: turn a visitor into a mailing-list contact (email + ZIP code), with consent on record.
+
+What happens when someone joins the list:
+
+```
+Visitor's phone
+   │  types email + ZIP, ticks the consent box, taps "Get first access"
+   ▼
+Our website (hosted on Vercel, built with Next.js)
+   │  1. checks it's a real person, not a bot
+   │  2. checks the email and ZIP look valid
+   ▼
+Our database (Supabase)  ← we keep our own copy, with proof of consent
+   ▼
+Klaviyo (email tool)     ← the copy we send emails from
+   ▼
+"You're on the list" page → optional extra questions
+```
+
+Three outside services are involved. Keep these straight:
+
+| Service | What it is | Why we use it |
+|---|---|---|
+| **Vercel** | Hosts the website | Makes the site available on the internet and builds a preview link for each change |
+| **Supabase** | Our database (and later, logins) | We own a copy of every signup, so we never depend on Klaviyo alone |
+| **Klaviyo** | Email marketing tool | Sends the emails, handles unsubscribes |
+
+---
+
+## 2. Vocabulary
+
+- **Next.js**: the framework (a toolkit) the site is written in. It turns files in folders into web pages.
+- **React / component**: a reusable piece of a page, like a signup form or a hero banner. Files in `src/components/`.
+- **TypeScript (`.ts`, `.tsx`)**: JavaScript with labels on data ("this is an email, that is a number") so mistakes get caught before the site runs.
+- **Tailwind**: a styling method where the look is written as short class names right on the element (`rounded-sm border-[3px]`).
+- **Server vs. browser**: some code runs on our server (private, can hold secret keys); some runs in the visitor's browser (public, can never hold secrets).
+- **Server action**: a function marked `"use server"` that a form can call directly. The form's data goes to the server, the server does the work. This is how signup and contact work.
+- **Environment variable**: a setting or secret kept outside the code (like an API key). Locally in `.env.local`, in production in Vercel's settings.
+- **Migration**: a numbered file that changes the database's structure. Lives in `supabase/migrations/`.
+- **RLS (Row Level Security)**: a database lock that decides who can read or write each table.
+- **Git / commit / branch**: git is the history of every change. A commit is one saved step. A branch is a side copy where we work without touching the main version.
+- **OG image (Open Graph)**: the preview picture that appears when someone shares a link in iMessage, WhatsApp, or Messenger.
+- **noindex**: a signal telling Google "do not list this site." It is on until you say go live.
+
+---
+
+## 3. The folder map
+
+```
+paradise-site/
+├─ CLAUDE.md               Rules for Claude on this project (compliance hard stops, design, how to work with you)
+├─ docs/build-directions.md  The full build spec (v2)
+├─ docs/LEARNING-GUIDE.md    This file
+├─ BUILD_LOG.md            One line per module built, marked Generic or Paradise-specific
+├─ CODE_OWNERSHIP.md       Which code is reusable; ownership is pending counsel
+├─ DEPENDENCIES.md         Open-source libraries we use and their licenses
+├─ .env.example            Names of the secrets we need (no values)
+├─ src/
+│  ├─ app/                 Pages. A folder here = a web address.
+│  ├─ components/          Reusable pieces (forms, hero banner)
+│  ├─ config/              Paradise-specific words and options (brand name, language list, consent text)
+│  ├─ design/tokens.css    Colors, fonts, sizes: the one place to change the look
+│  └─ lib/generic/         Reusable engine code with NO Paradise names in it
+└─ supabase/migrations/    Database structure files
+```
+
+**The big idea behind `lib/generic` vs. `config`:** you may later reuse this machinery for another project (build directions section 4A). So anything that knows the word "Paradise" lives in `config/` or `app/`, and anything that doesn't lives in `lib/generic/`. A test of this: searching `lib/generic` for "Paradise" should find nothing.
+
+---
+
+## 4. How pages work in this version of Next.js
+
+In `src/app/`, **a folder with a `page.tsx` inside is a web address.**
+
+| File | Address |
+|---|---|
+| `app/page.tsx` | `/` (home) |
+| `app/join/page.tsx` | `/join` |
+| `app/welcome/page.tsx` | `/welcome` |
+| `app/about/page.tsx` | `/about` |
+| `app/contact/page.tsx` | `/contact` |
+| `app/privacy/page.tsx`, `app/terms/page.tsx` | `/privacy`, `/terms` |
+
+`app/layout.tsx` wraps every page. It loads the three fonts, sets the site title pattern ("Page name | Paradise Sessions"), and sets the default "do not index" instruction.
+
+Each page exports `metadata` (its browser-tab title and the description shown in search/share previews).
+
+Note: `AGENTS.md` warns that this Next.js version (16) differs from older ones, so Claude checks the bundled docs instead of relying on memory.
+
+---
+
+## 5. The look: `src/design/tokens.css` and `globals.css`
+
+All design choices are named values ("tokens") in one file:
+
+- Colors: black background (`paper`), white text (`ink`), gray secondary text (`ink-soft`), **one gold accent** (`primary`, `#fcd116`), dark gray cards and inputs, and a coral "chili" used only for error messages.
+- Fonts: **Big Shoulders** for headings, **Figtree** for body text, **Cal Sans** italic for the "Paradise Sessions" wordmark.
+- Square-ish corners and a hard offset shadow (gold on cards, white on buttons) for a ticket/poster feel.
+
+Change a value here and the whole site updates. That is what makes a future logo or palette change a one-file edit.
+
+`globals.css` pulls in Tailwind and the tokens, makes the page dark, draws a visible gold outline on whatever is keyboard-focused (accessibility), and turns off animation for people who've asked their phone to reduce motion.
+
+Contrast ratios are noted in a comment at the top of `tokens.css` (all pass the WCAG AA accessibility standard).
+
+---
+
+## 6. Safety switches (these protect you)
+
+### 6a. Not-yet-public: the noindex system (`config/site.ts`, `robots.ts`, `next.config.ts`, `layout.tsx`)
+Until you approve launch, the site tells search engines to stay away in **three** ways: a meta tag on every page, a `robots.txt` file, and an `X-Robots-Tag` header. One setting turns all three off: `ALLOW_INDEXING=true` in Vercel production. Nothing else. Going live is your decision (CLAUDE.md says to escalate it).
+
+### 6b. The "published" flags (`config/featured-event.ts`, `components/EventHero.tsx`)
+The home page has a banner under the signup box. Today there is no confirmed show, so it shows a plain "First show / Coming soon" graphic.
+
+When a show exists later, it has `published`, `datePublic`, and `venuePublic` flags, **all false by default**. The banner code only prints a date or venue if its flag is true. This is how the compliance rules (no venue or date before a signed agreement) are enforced by the code, not just by remembering.
+
+### 6c. The legal-name constant (`config/site.ts`)
+`PRESENTER_NAME` is an empty string. Any future footer or policy will read this, so the company name can't appear anywhere until you set it in one place.
+
+---
+
+## 7. The signup flow, step by step
+
+This is the most important feature. Files involved: `components/SignupForm.tsx`, `components/AttributionFields.tsx`, `app/actions.ts`, `lib/generic/signup/validate.ts`, `config/signup.ts`.
+
+**Step 1: the form (`SignupForm.tsx`).** Fields: email, ZIP, a consent checkbox, plus language on `/join` only. It also carries a few invisible things:
+- *Attribution fields* (`AttributionFields.tsx`): remembers where the visitor first came from (which ad or link, via the UTM tags in the address) and which page they landed on, and sends that along. It stores this in the browser so the *first* source survives if they browse around before signing up. This is how you'll know which QR code or post worked.
+- *Honeypot*: a hidden field named "company" that real people never see. Bots fill it in, which gives them away.
+- *Timer*: a form submitted in under 1.5 seconds is a bot.
+
+**Step 2: the server action (`joinList` in `app/actions.ts`)** runs these in order:
+1. **Bot check.** If it looks like a bot, send it to the thank-you page and save nothing, so the bot learns nothing.
+2. **Validate** (`parseSignup`): email shape, a 5-digit ZIP, consent ticked. If not, show a friendly error.
+3. **Is the database connected?** If not (e.g., before keys are set), say "the list isn't open yet" rather than pretend it worked.
+4. **Save to Supabase** with the email, ZIP, language, **the exact consent wording and the time they agreed**, the page and referrer, and the UTM tags. That is our proof of consent.
+5. **Already signed up?** The database refuses a duplicate email (error code 23505). We send them to the same thank-you page without saving anything and without telling them whether the email was already known. This protects other people's privacy.
+6. **Sync to Klaviyo** (if keys exist). If Klaviyo fails, the person is still safely in our database, and we record "failed" so it can be retried later. We deliberately never log the error text, because it can contain the email address.
+7. **Set a short-lived cookie** (1 hour, not readable by scripts) holding their new record ID, then go to `/welcome`.
+
+**Step 3: `/welcome`** thanks them. If they have the cookie, they see `WelcomeForm`, an optional set of extra questions (name, city, genres, group size, price range, GA vs VIP, how they heard, Instagram). `saveWelcome` saves **only the fields they filled in**, so blanks never overwrite anything, and passes the same answers to Klaviyo. The cookie is what proves "this is the person who just signed up" without any login.
+
+**Validation (`lib/generic/signup/validate.ts`)** checks every answer against allowed lists from `config/signup.ts`. Someone tampering with the form can't invent a language or a genre. The tests in `validate.test.ts` prove these rules work.
+
+**The config (`config/signup.ts`)** holds the option lists, the consent sentence, and the label Klaviyo shows as the subscription source. The language list is marked pending native-speaker review.
+
+---
+
+## 8. The database (Supabase)
+
+### The `subscribers` table (`supabase/migrations/20261013000000_create_subscribers.sql`)
+One row per person. Groups of columns: identity (email, ZIP, language), **consent record** (when, and the exact text), where they came from (page, referrer, UTMs), optional answers from `/welcome`, and Klaviyo sync status.
+
+Worth knowing:
+- `email_lower` is a computed lowercase copy with a uniqueness rule, so `Sam@x.com` and `sam@x.com` count as the same person.
+- A small automatic function keeps `updated_at` current.
+- **RLS is on and no public access is granted.** Nobody on the internet can read or write this table directly, not even with our public key. Only our server, using the secret service key, can touch it. This keeps the list safe.
+
+### The `contact_messages` table (`20261014000000_create_contact_messages.sql`)
+Same lock, for messages sent from `/contact`. **This migration has not been run yet.**
+
+### The three Supabase connectors (`lib/generic/supabase/`)
+- `admin.ts`: server-only, uses the secret key, bypasses the locks. Used now for saving signups and messages. The `import "server-only"` line makes the build fail if anyone tries to use it in browser code.
+- `server.ts` and `browser.ts`: use the public key and act as a logged-in user. **Not used yet.** They're ready for the admin area login (the next feature).
+
+---
+
+## 9. Klaviyo (`lib/generic/klaviyo.ts`)
+
+Talks to Klaviyo's API in plain web requests. Three pieces:
+- `klaviyoConfigured()`: are the keys present?
+- `syncProfile()`: two calls. First create or update the person's profile (email, ZIP, details), then subscribe them to the list with email-marketing consent.
+- `updateProperties()`: add the `/welcome` answers to an existing profile.
+
+The "subscribed" status is single opt-in (no confirmation click). Klaviyo stamps the consent time itself; ours is in `subscribers.consent_at`.
+
+---
+
+## 10. The pages
+
+| Page | Purpose | Notes |
+|---|---|---|
+| **Home** `/` | Convert. Wordmark + one line + signup (email, ZIP, consent only) above the fold, the event banner, three "what this is" blocks, a second signup, footer links | The footer nav (About, Contact, Privacy, Terms) was added with the quick pages |
+| **Join** `/join` | The page every link, QR code, and bio points to | Same form plus language |
+| **Welcome** `/welcome` | Thank-you + optional questions | Not for search engines |
+| **About** `/about` | Who and why | **Draft copy for your approval.** Uses only facts from the brief. Ends with a signup form |
+| **Contact** `/contact` | Route real inquiries | Category dropdown: Artist or comedian, Venue or room, Community organization, Press, General. **No Sponsor or Investor option** (compliance). Same bot protections as signup. Saves to `contact_messages`. Files: `ContactForm.tsx`, `contact/actions.ts`, `config/contact.ts`, `lib/generic/contact/validate.ts` (+ tests) |
+| **Privacy** `/privacy`, **Terms** `/terms` | Legal pages | **Placeholders** with a "[COUNSEL REVIEW REQUIRED]" box. They name no company, as required |
+| **Share image** (`opengraph-image.tsx`) | The 1200×630 black picture with the wordmark and gold bar that shows when links are shared | Generated by code, so there is no image file |
+
+---
+
+## 11. The project paperwork
+
+- **`CLAUDE.md`**: the standing rules Claude reads every session: the seven compliance hard stops, naming rules (never "Sama Soul", never "PH", never "Paradise Presents"), design rules, and how to work with you (plan first, small branches, screenshot every UI change, never commit secrets).
+- **`docs/build-directions.md`**: the long spec, with a numbered build order (section 12).
+- **`BUILD_LOG.md`**: dated list of what was built and whether each module is Generic (G) or Paradise-specific (P).
+- **`CODE_OWNERSHIP.md`**: says ownership of the code is undecided and pending counsel. No license is claimed.
+- **`DEPENDENCIES.md`**: every open-source library and its license.
+- **`.env.example`**: the secrets the site will need (Supabase, Klaviyo, Resend keys). Real values go in `.env.local`, which git ignores (`.gitignore`), so secrets can never be committed by accident.
+- **Git history**: each step is a commit with a message. Work happens on branches (the quick pages are on `quick-pages`) and nothing goes straight to `main`.
+
+---
+
+## 12. Testing
+
+`npm test` runs the automated checks (vitest). There are 13+ tests covering signup rules and contact rules. They check things like "a bad email is rejected," "an unknown language is ignored," and "Sponsor is not an allowed contact category." They don't test the visual look; for that, Claude takes screenshots at phone (390px) and desktop (1440px) widths.
+
+---
+
+## 13. Things to be aware of (open items)
+
+1. **Welcome-page wording.** `/welcome` says "Check your email to confirm," but signup is currently single opt-in, so nothing needs confirming. Either the wording changes or we choose double opt-in. This is your call (build brief section 8).
+2. **Privacy page doesn't mention contact messages** yet, and the browser memory used for attribution isn't described. Both are for counsel's version.
+3. **Error color.** The build brief (v1.3) says error text should avoid coral/red and use dark amber or underlined off-white. The build currently uses coral ("chili") for errors, per CLAUDE.md. Worth confirming with the same locals who confirmed the banned colors.
+4. **Gold check.** The brief asks that gold-on-black be confirmed "clean locally" before the palette is final.
+5. **Contact migration not applied yet,** and there's no email alert when someone sends a message.
+6. **Language list** awaits native-speaker review.
+
+---
+
+## Changelog
+
+| Date | What changed in this guide |
+|---|---|
+| 2026-10-14 | First version. Explains everything built so far: scaffold, design tokens, home, signup flow, Supabase, Klaviyo, Join/Welcome/Privacy, About/Contact/Terms. |

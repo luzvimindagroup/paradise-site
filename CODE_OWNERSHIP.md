@@ -7,6 +7,7 @@
 **Generic (reusable, no brand names, copy, or data):**
 - `src/lib/generic/klaviyo.ts` — Klaviyo profile sync and subscribe
 - `src/lib/generic/signup/` — signup and welcome validation, bot checks
+- `src/lib/generic/contact/` — contact-form validation
 - `src/lib/generic/supabase/` — Supabase clients (admin, server, browser)
 
 **Paradise-specific (stays with Paradise):**
