@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useId } from "react";
+import { usePreservedForm } from "@/lib/generic/forms/usePreservedForm";
+import { useEffect, useId } from "react";
 import { saveWelcome, type WelcomeState } from "@/app/actions";
 import { track } from "@/lib/generic/analytics/track";
 import { GENRES, GROUP_SIZES, HOW_HEARD, LANGUAGES, PRICE_BANDS, TICKET_INTEREST } from "@/config/signup";
@@ -13,7 +14,7 @@ const chip =
   "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-sm border-[3px] border-ink px-3 text-sm font-semibold has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-primary";
 
 export function WelcomeForm() {
-  const [state, action, pending] = useActionState(saveWelcome, idle);
+  const [state, onSubmit, pending] = usePreservedForm(saveWelcome, idle);
   const uid = useId();
   const saved = state.status === "saved";
   useEffect(() => { if (saved) track("profile_complete"); }, [saved]);
@@ -27,7 +28,7 @@ export function WelcomeForm() {
   }
 
   return (
-    <form action={action} className="grid gap-6">
+    <form method="post" onSubmit={onSubmit} className="grid gap-6">
       <p className="text-ink-soft">Everything here is optional. Skip any of it.</p>
 
       <div>

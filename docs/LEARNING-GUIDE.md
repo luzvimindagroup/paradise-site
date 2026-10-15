@@ -246,6 +246,34 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 
 **Privacy page** was updated in the same change to describe contact messages, browser memory, the short-lived cookie, and analytics (still a placeholder for counsel).
 
+## 10d. Events
+
+**What you can do:** in `/admin/events`, create, edit, publish, and unpublish events. Each has a title, web address (slug), description, date and time (typed in Pacific time), venue, ticket link, and a photo with required alt text. The public site shows an events list (`/events`, with a "Past shows" archive), a page per event (`/events/[slug]`), and the home-page banner uses the next published event that has a photo.
+
+**The compliance gate (the most important idea here).**
+- Date and venue are *stored* but not *shown* unless their own checkbox ("Show the date publicly" / "Show the venue publicly") is ticked. Both default to off, and each checkbox says to tick it only after a signed agreement.
+- All public pages get events through **one function**, `toPublicEvent` in `lib/generic/events/public.ts`. It strips hidden fields before a page ever sees them, so a page can't leak a date by forgetting a check. Tests prove it (a hidden venue name never appears in the output).
+- The database also refuses nonsense: you can't mark a date public if there is no date, a venue public if there is no venue, or save a photo without alt text.
+- **Two gaps the gate can't close**, both on you: the **title** and **description** are free text and always public once the event is published, so don't put the venue, date, or an unapproved artist name in them. The form has a reminder under Description. (Real example from testing: a title naming the venue and an artist. The fix was to unpublish.)
+- Publishing makes the event public. Artist names also need the artist's written permission (CLAUDE.md).
+
+**Times.** You type Pacific time; the database stores one exact moment (UTC); the site shows Pacific again. `lib/generic/events/zoned.ts` handles daylight saving, with tests for both summer and winter.
+
+**Past vs upcoming.** An event is "past" only if it has a *public* date that has passed. Events without a public date stay under upcoming, so "coming soon" shows no date.
+
+**Photos.** Upload goes to a Supabase Storage bucket called `event-images` (public to view by link; only the server can upload; JPG/PNG/WebP under 4 MB). The server checks the file's real contents, not just the label the browser gave it, and rejects anything that isn't a true JPG, PNG, or WebP. Replacing or removing a photo deletes the old file. The site's image settings (`next.config.ts`) allow loading from that bucket.
+
+**Speed and freshness ("caching").** Public event data is remembered ("use cache") for about five minutes (the clock matters: an event moves from upcoming to past within ~5 minutes of starting) so pages load fast. When you save in admin, the site is told to forget it immediately (`updateTag("events")`), so your change shows at once. Editing the database directly (e.g. in the Supabase screen) does *not* do that, so changes made there can take up to an hour to show.
+
+**Files:** database `supabase/migrations/20261015000000_create_events.sql`; engine `lib/generic/events/` (types, public gate, validation, time zones); wiring `lib/events.ts`; admin `app/admin/(panel)/events/`; public `app/events/`, `components/EventCard.tsx`; share image `app/events/[slug]/opengraph-image.tsx`.
+
+## 10e. Forms keep what you typed (`usePreservedForm`)
+
+**The problem.** React 19 empties a form after every form action, even when the server answers "fix this" (a mistyped ZIP, a missing title). Visitors lost their email, and you lost a long event you'd typed. This was found on 2026-10-15 when an event form emptied itself.
+
+**The fix.** `lib/generic/forms/usePreservedForm.ts` submits the form through `onSubmit` instead of `action=`, so the fields stay as typed (including a chosen photo). All five forms use it: signup, welcome, contact, admin login, and event. Trade-off: the forms now need JavaScript to submit (no "plain HTML" fallback). If someone taps Submit before the page has finished loading, nothing is saved, but because the forms are marked `method="post"` their typed email can't leak into the web address.
+
+""
 ## 11. The project paperwork
 
 - **`CLAUDE.md`**: the standing rules Claude reads every session: the seven compliance hard stops, naming rules (never "Sama Soul", never "PH", never "Paradise Presents"), design rules, and how to work with you (plan first, small branches, screenshot every UI change, never commit secrets).
@@ -272,6 +300,8 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 | 2 | **Error color.** Errors use coral ("chili"). Rule clarified by Alan 2026-10-14: avoid red and blue because of gang affiliation, but an occasional use is fine as long as neither predominates. Coral is a minor, error-only use. | Low priority. Alan will revisit later. |
 | 3 | **Privacy page** placeholder now covers contact messages, browser memory, the signup cookie, and analytics (updated 2026-10-14). | Counsel still has to review. Keep updating it whenever a feature collects new data. |
 | 10 | **Hardening to do before launch** (from the 2026-10-14 code review, deliberately deferred): rate-limit signups and contact (bots that skip the hidden timer field are only stopped by the honeypot); retry Klaviyo syncs that failed (the dashboard counts them, nothing retries yet); restrict where the login link may point (Supabase's redirect list already limits it); `AttributionFields` remembers UTMs only from the page the visitor first loaded. | Build Order step 7 |
+| 11 | **Events data check.** The first test event named a real-looking artist and venue with both public boxes ticked, and no agreement. It was set back to a draft. Before launch, review every event's title and description by hand. | Ongoing |
+| 12 | **"Soft 404" on unknown event/landing addresses** (from the events code review): a missing page streams a "not found" screen but with a 200 status instead of 404, so search engines may index nonexistent URLs. Not an issue while the site is noindex, but must be solved before launch, and the same pattern must be handled correctly in the landing pages (SEO is a stated requirement). | Before launch |
 | 9 | **No GTM/GA4 yet.** Analytics is built but dormant until `NEXT_PUBLIC_GTM_ID` is set. Needs the company Google account. | Waiting on Alan |
 | 4 | **Gold-on-black check** with locals before the palette is final. | Open |
 | 5 | ~~Contact migration~~ applied 2026-10-14 and tested end to end. **No email alert yet** when a message arrives (check `/admin/messages`). | Partly done |
@@ -290,3 +320,6 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 | 2026-10-14 | Added section 10b: admin area, magic-link login, the three locks. Open items updated. |
 | 2026-10-14 | Added section 10c: cookie banner, consent, GTM, and the three tracking events. Privacy open item updated. |
 | 2026-10-14 | Code review of everything so far. Fixed: crash on a tampered cookie, no way to withdraw cookie consent, admin pages now check admin rights themselves, Klaviyo calls time out, a failed bookkeeping update no longer breaks a signup. Deferred items listed as open item 10. |
+| 2026-10-15 | Added section 10d: events (admin, public pages, the date/venue gate, Pacific time, photos, caching). |
+| 2026-10-15 | Added 10e: forms keep typed values on error. Photo limit is 4 MB (Next's 1 MB default was rejecting photos). Admin checks marked request-time. |
+| 2026-10-15 | Events code review: strict date checking (no Feb 31), real file-type check on photos, update-of-a-missing-event handled, 5-minute event cache, forms POST-only, event page canonical/OG tags. Open item 12 added. |

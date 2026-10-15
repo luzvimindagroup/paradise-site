@@ -1,8 +1,8 @@
 import { CookieSettingsButton } from "@/components/AnalyticsRoot";
 import { EventHero } from "@/components/EventHero";
 import { SignupForm } from "@/components/SignupForm";
-import { FEATURED_EVENT } from "@/config/featured-event";
 import { SITE } from "@/config/site";
+import { getFeaturedEvent } from "@/lib/events";
 
 const blocks = [
   {
@@ -19,7 +19,8 @@ const blocks = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const featured = await getFeaturedEvent();
   return (
     <>
       <header className="mx-auto flex max-w-6xl items-center justify-end px-5 py-4 sm:px-10">
@@ -54,7 +55,7 @@ export default function Home() {
           </div>
         </section>
 
-        <EventHero event={FEATURED_EVENT} />
+        <EventHero event={featured} />
 
         <section aria-labelledby="what" className="mx-auto max-w-6xl px-5 py-14 sm:px-10 lg:py-20">
           <h2 id="what" className="sr-only">What Paradise Sessions is</h2>
@@ -103,7 +104,7 @@ export default function Home() {
           {SITE.series} · {SITE.market}
         </p>
         <nav aria-label="Footer" className="mt-2 flex flex-wrap gap-x-5">
-          {[["About", "/about"], ["Contact", "/contact"], ["Privacy", "/privacy"], ["Terms", "/terms"]].map(([t, h]) => (
+          {[["Events", "/events"], ["About", "/about"], ["Contact", "/contact"], ["Privacy", "/privacy"], ["Terms", "/terms"]].map(([t, h]) => (
             <a key={h} href={h} className="inline-flex min-h-11 items-center underline">{t}</a>
           ))}
           <CookieSettingsButton className="inline-flex min-h-11 items-center underline" />

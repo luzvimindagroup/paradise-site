@@ -69,6 +69,7 @@ Every signup writes to Klaviyo AND to our own Supabase `subscribers` table (we o
 - Photo-forward with real photos of real local artists (with permission). Stock images only on preview builds.
 - Performance: mobile LCP under 2.5s. Accessibility: WCAG 2.1 AA contrast, keyboard-operable forms, alt text on every image.
 - Every page and landing page has correct Open Graph images so links look good in iMessage, WhatsApp, and Messenger.
+- Landing pages (`/l/[slug]`) must be easy to optimize for search (Alan, 2026-10-15): editable page title and meta description per page, one clear H1, clean slug, canonical URL, per-page share image, structured data (JSON-LD), sitemap entry, fast load. Landing pages stay noindex until Alan goes live like everything else.
 - Design tokens (colors, type scale, spacing, radius) live in one place so a future logo/palette swap is one edit.
 
 ## How to work with Alan (first-time builder)

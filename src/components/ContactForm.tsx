@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useId } from "react";
+import { usePreservedForm } from "@/lib/generic/forms/usePreservedForm";
+import { useEffect, useId } from "react";
 import { sendContact, type ContactState } from "@/app/contact/actions";
 import { AttributionFields } from "@/components/AttributionFields";
 import { CONTACT_CATEGORIES } from "@/config/contact";
@@ -9,7 +10,7 @@ import { track } from "@/lib/generic/analytics/track";
 const idle: ContactState = { status: "idle" };
 
 export function ContactForm() {
-  const [state, action, pending] = useActionState(sendContact, idle);
+  const [state, onSubmit, pending] = usePreservedForm(sendContact, idle);
   const uid = useId();
   const err = state.status === "error" ? state : null;
   const sentCategory = state.status === "sent" ? state.category : undefined;
@@ -28,7 +29,7 @@ export function ContactForm() {
   }
 
   return (
-    <form action={action} noValidate className="relative grid gap-4" aria-describedby={`${uid}-status`}>
+    <form method="post" onSubmit={onSubmit} noValidate className="relative grid gap-4" aria-describedby={`${uid}-status`}>
       <AttributionFields />
       {/* Honeypot: people never see or reach this; bots fill it in. */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
