@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Big_Shoulders, Figtree, Cal_Sans } from "next/font/google";
 import { AnalyticsRoot } from "@/components/AnalyticsRoot";
 import { ALLOW_INDEXING, SITE } from "@/config/site";
@@ -37,7 +38,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${shoulders.variable} ${figtree.variable} ${calSans.variable}`}>
       <body className="min-h-dvh">
         {children}
-        <AnalyticsRoot />
+        <Suspense fallback={null}>
+          <AnalyticsRoot />
+        </Suspense>
       </body>
     </html>
   );

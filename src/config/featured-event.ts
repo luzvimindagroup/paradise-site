@@ -1,15 +1,13 @@
-// The event promoted in the home-page image band.
-// Stays null until Alan confirms a signed agreement for a show. Later this
-// comes from the Supabase `events` table (published + image set).
+// The shape of the event promoted in the home-page image band.
+// It comes from the events table (see src/lib/events.ts): the next published event that has a photo.
+// Date and venue are already stripped unless their public flags are true.
 export type FeaturedEvent = {
   title: string;
   imageUrl: string;
   imageAlt: string; // required: alt text on every image
   published: boolean;
-  datePublic: boolean; // defaults false; date is never shown unless true
+  datePublic: boolean;
   dateLabel?: string;
-  venuePublic: boolean; // defaults false; venue is never shown unless true
+  venuePublic: boolean;
   venueLabel?: string;
 };
-
-export const FEATURED_EVENT: FeaturedEvent | null = null;
