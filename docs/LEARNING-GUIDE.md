@@ -183,7 +183,7 @@ Talks to Klaviyo's API in plain web requests. Three pieces:
 - `syncProfile()`: two calls. First create or update the person's profile (email, ZIP, details), then subscribe them to the list with email-marketing consent.
 - `updateProperties()`: add the `/welcome` answers to an existing profile.
 
-The "subscribed" status is single opt-in (no confirmation click). Klaviyo stamps the consent time itself; ours is in `subscribers.consent_at`.
+Whether people must click a confirmation email (double opt-in) is **a setting on the list inside Klaviyo, not in our code**. Our code just asks Klaviyo to subscribe the person; if the list is set to double opt-in, Klaviyo sends the confirmation email and only finishes subscribing them after the click. Alan believes he has switched the list to double opt-in (2026-10-14); this has not been tested yet. Klaviyo stamps the consent time itself; ours is in `subscribers.consent_at`.
 
 ---
 
@@ -219,14 +219,16 @@ The "subscribed" status is single opt-in (no confirmation click). Klaviyo stamps
 
 ---
 
-## 13. Things to be aware of (open items)
+## 13. Open items (kept current)
 
-1. **Welcome-page wording.** `/welcome` says "Check your email to confirm," but signup is currently single opt-in, so nothing needs confirming. Either the wording changes or we choose double opt-in. This is your call (build brief section 8).
-2. **Privacy page doesn't mention contact messages** yet, and the browser memory used for attribution isn't described. Both are for counsel's version.
-3. **Error color.** The build brief (v1.3) says error text should avoid coral/red and use dark amber or underlined off-white. The build currently uses coral ("chili") for errors, per CLAUDE.md. Worth confirming with the same locals who confirmed the banned colors.
-4. **Gold check.** The brief asks that gold-on-black be confirmed "clean locally" before the palette is final.
-5. **Contact migration not applied yet,** and there's no email alert when someone sends a message.
-6. **Language list** awaits native-speaker review.
+| # | Item | Status |
+|---|---|---|
+| 1 | **Double opt-in.** The `/welcome` wording ("Check your email to confirm") is right only if the Klaviyo list is double opt-in. | Alan believes it's switched on. **Verify with a test signup** once Klaviyo keys are connected: the confirmation email should arrive, and the profile should stay unsubscribed until the click. |
+| 2 | **Error color.** Errors use coral ("chili"). Rule clarified by Alan 2026-10-14: avoid red and blue because of gang affiliation, but an occasional use is fine as long as neither predominates. Coral is a minor, error-only use. | Low priority. Alan will revisit later. |
+| 3 | **Privacy page** doesn't yet mention contact messages, or the browser memory used to remember where a visitor first came from. | Needs to be in the version counsel reviews. Stay up to date: update the placeholder whenever a feature collects new data. |
+| 4 | **Gold-on-black check** with locals before the palette is final. | Open |
+| 5 | **Contact migration** not yet applied; no email alert when a message arrives. | Open |
+| 6 | **Language list** awaits native-speaker review. | Open |
 
 ---
 
@@ -235,3 +237,4 @@ The "subscribed" status is single opt-in (no confirmation click). Klaviyo stamps
 | Date | What changed in this guide |
 |---|---|
 | 2026-10-14 | First version. Explains everything built so far: scaffold, design tokens, home, signup flow, Supabase, Klaviyo, Join/Welcome/Privacy, About/Contact/Terms. |
+| 2026-10-14 | Open items reworked: double opt-in is a Klaviyo setting (to verify), color rule clarified, privacy page to be kept in step with new data collection. |

@@ -51,6 +51,9 @@ Design the data model so Phase 2–3 plug in without rewrites, but keep those ro
 - Artist accounts and settlement statements (directions section 9) stay in Phase 2–3, behind the OFF flag. Use section 9 as the data-model and rules reference (statements only; the site never moves money, never stores bank/SSN/W-9 files).
 - No veterans content at all (stricter rule wins).
 - Signup: email + ZIP + language + consent required; group size and price band optional on the thank-you page.
+- Gang colors (2026-10-14): avoid red and blue (and green), but an occasional use is fine as long as none predominates. Keep them out of the logo, main palette, and hero imagery.
+- Double opt-in is set in the Klaviyo list settings, not in code.
+- Whenever a feature collects new data or adds a tracker, update `/privacy` (still a placeholder for counsel) in the same change and log it in `docs/LEARNING-GUIDE.md` section 13.
 - Colors: the black / white / gold direction is chosen; directions section 2 and 14 "brand colors pending" is settled.
 
 ## Mailing-list signup spec
