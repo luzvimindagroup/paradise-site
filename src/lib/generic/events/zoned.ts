@@ -20,7 +20,9 @@ export function zonedToUtcIso(naive: string, tz: string): string | null {
   if (Number.isNaN(asIfUtc)) return null;
   let utc = asIfUtc - offsetMs(asIfUtc, tz);
   utc = asIfUtc - offsetMs(utc, tz); // second pass settles dates near a daylight-saving change
-  return new Date(utc).toISOString();
+  const iso = new Date(utc).toISOString();
+  // Reject dates that only "work" by rolling over (Feb 31, month 13, hour 25) or don't exist (the spring-forward gap).
+  return utcToZonedInput(iso, tz) === naive ? iso : null;
 }
 
 /** Stored UTC moment -> "2027-04-10T19:00" for the admin form's date-time box. */

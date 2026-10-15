@@ -19,6 +19,12 @@ describe("zoned time", () => {
     expect(zonedToUtcIso("tomorrow", LA)).toBeNull();
     expect(zonedToUtcIso("", LA)).toBeNull();
   });
+  it("rejects dates that would silently roll over or don't exist", () => {
+    expect(zonedToUtcIso("2027-02-31T19:00", LA)).toBeNull();
+    expect(zonedToUtcIso("2027-13-01T19:00", LA)).toBeNull();
+    expect(zonedToUtcIso("2027-04-10T25:00", LA)).toBeNull();
+    expect(zonedToUtcIso("2027-03-14T02:30", LA)).toBeNull(); // skipped hour when clocks spring forward
+  });
   it("formats in the named zone", () => {
     expect(formatZoned("2027-04-11T02:00:00.000Z", LA)).toBe("Sat, Apr 10, 7:00 PM");
   });

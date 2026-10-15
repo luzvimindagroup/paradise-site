@@ -28,7 +28,7 @@ export function EventForm({ values }: { values: EventFormValues }) {
   const [photoProblem, setPhotoProblem] = useState<string | null>(null);
 
   return (
-    <form onSubmit={onSubmit} className="grid max-w-2xl gap-6">
+    <form method="post" onSubmit={onSubmit} className="grid max-w-2xl gap-6">
       {values.id && <input type="hidden" name="id" value={values.id} />}
 
       <div>

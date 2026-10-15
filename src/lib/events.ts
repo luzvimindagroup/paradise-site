@@ -18,11 +18,12 @@ async function loadPublic(): Promise<PublicEvent[]> {
   return (data as EventRow[]).map((r) => toPublicEvent(r, opts())).filter((e): e is PublicEvent => e !== null);
 }
 
-/** Public events, split into upcoming and past. Cached for an hour; admin saves refresh it at once. */
+/** Public events, split into upcoming and past. Refreshed every ~5 minutes; admin saves refresh it at once. */
 export async function getPublicEvents(): Promise<{ upcoming: PublicEvent[]; past: PublicEvent[] }> {
   "use cache";
   cacheTag(EVENTS_TAG);
-  cacheLife("hours");
+  // Short, because "upcoming vs past" depends on the clock: an event moves to the archive within ~5 minutes of starting.
+  cacheLife({ stale: 60, revalidate: 300, expire: 3600 });
   try {
     return splitEvents(await loadPublic(), new Date());
   } catch {

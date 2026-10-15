@@ -29,7 +29,7 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="relative grid gap-4" aria-describedby={`${uid}-status`}>
+    <form method="post" onSubmit={onSubmit} noValidate className="relative grid gap-4" aria-describedby={`${uid}-status`}>
       <AttributionFields />
       {/* Honeypot: people never see or reach this; bots fill it in. */}
       <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">

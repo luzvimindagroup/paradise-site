@@ -18,7 +18,7 @@ export function LoginForm() {
     );
   }
   return (
-    <form onSubmit={onSubmit} noValidate className="grid gap-4">
+    <form method="post" onSubmit={onSubmit} noValidate className="grid gap-4">
       <div>
         <label htmlFor={`${uid}-email`} className="mb-1 block text-sm font-semibold">Email</label>
         <input

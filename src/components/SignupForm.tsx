@@ -18,7 +18,7 @@ export function SignupForm({ source, showLanguage = false }: { source: string; s
   const label = "mb-1 block text-sm font-semibold text-ink";
 
   return (
-    <form onSubmit={onSubmit} noValidate className="relative grid gap-4" aria-describedby={`${uid}-status`}>
+    <form method="post" onSubmit={onSubmit} noValidate className="relative grid gap-4" aria-describedby={`${uid}-status`}>
       <input type="hidden" name="source" value={source} />
       <AttributionFields />
       {/* Honeypot: people never see or reach this; bots fill it in. */}

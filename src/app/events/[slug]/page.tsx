@@ -11,9 +11,12 @@ export async function generateMetadata({ params }: PageProps<"/events/[slug]">):
   const event = await getPublicEvent(slug);
   if (!event) return { title: "Event not found" };
   const where = [event.dateLabel, event.venue].filter(Boolean).join(" · ");
+  const description = event.description.slice(0, 160) || where || "Paradise Sessions, San Diego's South Bay.";
   return {
     title: event.title,
-    description: event.description.slice(0, 160) || where || "Paradise Sessions, San Diego's South Bay.",
+    description,
+    alternates: { canonical: `/events/${event.slug}` },
+    openGraph: { title: event.title, description, type: "website", url: `/events/${event.slug}` },
   };
 }
 
@@ -37,7 +40,7 @@ async function Detail({ params }: { params: PageProps<"/events/[slug]">["params"
       {event.description && <p className="mt-6 max-w-[60ch] whitespace-pre-wrap text-lg text-ink-soft">{event.description}</p>}
       {event.ticketUrl && (
         <a
-          href={event.ticketUrl} rel="noopener"
+          href={event.ticketUrl} rel="noopener noreferrer"
           className="mt-8 inline-flex min-h-14 items-center rounded-sm border-[3px] border-ink bg-primary px-6 text-lg font-bold text-on-primary shadow-pop hover:bg-primary-deep"
         >
           Get tickets

@@ -28,7 +28,7 @@ export function WelcomeForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-6">
+    <form method="post" onSubmit={onSubmit} className="grid gap-6">
       <p className="text-ink-soft">Everything here is optional. Skip any of it.</p>
 
       <div>
