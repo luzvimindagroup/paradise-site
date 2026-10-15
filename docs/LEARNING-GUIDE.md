@@ -267,6 +267,13 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 
 **Files:** database `supabase/migrations/20261015000000_create_events.sql`; engine `lib/generic/events/` (types, public gate, validation, time zones); wiring `lib/events.ts`; admin `app/admin/(panel)/events/`; public `app/events/`, `components/EventCard.tsx`; share image `app/events/[slug]/opengraph-image.tsx`.
 
+## 10e. Forms keep what you typed (`usePreservedForm`)
+
+**The problem.** React 19 empties a form after every form action, even when the server answers "fix this" (a mistyped ZIP, a missing title). Visitors lost their email, and you lost a long event you'd typed. This was found on 2026-10-15 when an event form emptied itself.
+
+**The fix.** `lib/generic/forms/usePreservedForm.ts` submits the form through `onSubmit` instead of `action=`, so the fields stay as typed (including a chosen photo). All five forms use it: signup, welcome, contact, admin login, and event. Trade-off: the forms now need JavaScript to submit (no "plain HTML" fallback), which is normal for this site.
+
+""
 ## 11. The project paperwork
 
 - **`CLAUDE.md`**: the standing rules Claude reads every session: the seven compliance hard stops, naming rules (never "Sama Soul", never "PH", never "Paradise Presents"), design rules, and how to work with you (plan first, small branches, screenshot every UI change, never commit secrets).
@@ -313,3 +320,4 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 | 2026-10-14 | Added section 10c: cookie banner, consent, GTM, and the three tracking events. Privacy open item updated. |
 | 2026-10-14 | Code review of everything so far. Fixed: crash on a tampered cookie, no way to withdraw cookie consent, admin pages now check admin rights themselves, Klaviyo calls time out, a failed bookkeeping update no longer breaks a signup. Deferred items listed as open item 10. |
 | 2026-10-15 | Added section 10d: events (admin, public pages, the date/venue gate, Pacific time, photos, caching). |
+| 2026-10-15 | Added 10e: forms keep typed values on error. Photo limit is 4 MB (Next's 1 MB default was rejecting photos). Admin checks marked request-time. |

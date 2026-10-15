@@ -1,12 +1,13 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { usePreservedForm } from "@/lib/generic/forms/usePreservedForm";
+import { useId } from "react";
 import { requestLoginLink, type LoginState } from "./actions";
 
 const idle: LoginState = { status: "idle" };
 
 export function LoginForm() {
-  const [state, action, pending] = useActionState(requestLoginLink, idle);
+  const [state, onSubmit, pending] = usePreservedForm(requestLoginLink, idle);
   const uid = useId();
 
   if (state.status === "sent") {
@@ -17,7 +18,7 @@ export function LoginForm() {
     );
   }
   return (
-    <form action={action} noValidate className="grid gap-4">
+    <form onSubmit={onSubmit} noValidate className="grid gap-4">
       <div>
         <label htmlFor={`${uid}-email`} className="mb-1 block text-sm font-semibold">Email</label>
         <input

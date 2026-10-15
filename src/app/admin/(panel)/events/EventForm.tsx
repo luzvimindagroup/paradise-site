@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useId, useState } from "react";
+import { usePreservedForm } from "@/lib/generic/forms/usePreservedForm";
+import { useId, useState } from "react";
 import { MAX_IMAGE_BYTES } from "@/lib/generic/events/validate";
 import { saveEvent, type EventFormState } from "./actions";
 
@@ -22,12 +23,12 @@ const check = "mt-0.5 size-6 shrink-0 accent-primary";
 const help = "mt-1 text-sm text-ink-soft";
 
 export function EventForm({ values }: { values: EventFormValues }) {
-  const [state, action, pending] = useActionState(saveEvent, idle);
+  const [state, onSubmit, pending] = usePreservedForm(saveEvent, idle);
   const uid = useId();
   const [photoProblem, setPhotoProblem] = useState<string | null>(null);
 
   return (
-    <form action={action} className="grid max-w-2xl gap-6">
+    <form onSubmit={onSubmit} className="grid max-w-2xl gap-6">
       {values.id && <input type="hidden" name="id" value={values.id} />}
 
       <div>

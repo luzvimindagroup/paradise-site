@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { usePreservedForm } from "@/lib/generic/forms/usePreservedForm";
+import { useId } from "react";
 import { joinList, type JoinState } from "@/app/actions";
 import { AttributionFields } from "@/components/AttributionFields";
 import { CONSENT_TEXT, LANGUAGES } from "@/config/signup";
@@ -8,7 +9,7 @@ import { CONSENT_TEXT, LANGUAGES } from "@/config/signup";
 const idle: JoinState = { status: "idle" };
 
 export function SignupForm({ source, showLanguage = false }: { source: string; showLanguage?: boolean }) {
-  const [state, action, pending] = useActionState(joinList, idle);
+  const [state, onSubmit, pending] = usePreservedForm(joinList, idle);
   const uid = useId();
   const err = state.status === "error" ? state : null;
 
@@ -17,7 +18,7 @@ export function SignupForm({ source, showLanguage = false }: { source: string; s
   const label = "mb-1 block text-sm font-semibold text-ink";
 
   return (
-    <form action={action} noValidate className="relative grid gap-4" aria-describedby={`${uid}-status`}>
+    <form onSubmit={onSubmit} noValidate className="relative grid gap-4" aria-describedby={`${uid}-status`}>
       <input type="hidden" name="source" value={source} />
       <AttributionFields />
       {/* Honeypot: people never see or reach this; bots fill it in. */}
