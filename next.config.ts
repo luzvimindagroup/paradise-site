@@ -4,6 +4,8 @@ import type { NextConfig } from "next";
 const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname : null;
 
 const nextConfig: NextConfig = {
+  // Event photos arrive through a form action. Default limit is 1 MB; Vercel itself caps requests at 4.5 MB.
+  experimental: { serverActions: { bodySizeLimit: "4.5mb" } },
   images: {
     remotePatterns: supabaseHost
       ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/event-images/**" }]

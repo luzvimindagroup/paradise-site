@@ -38,6 +38,6 @@ describe("checkImage", () => {
   it("allows small jpg/png/webp only", () => {
     expect(checkImage({ type: "image/jpeg", size: 1000 })).toBeNull();
     expect(checkImage({ type: "image/gif", size: 1000 })).not.toBeNull();
-    expect(checkImage({ type: "image/png", size: 6 * 1024 * 1024 })).not.toBeNull();
+    expect(checkImage({ type: "image/png", size: 5 * 1024 * 1024 })).not.toBeNull();
   });
 });

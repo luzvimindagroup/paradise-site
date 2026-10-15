@@ -261,7 +261,7 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 
 **Past vs upcoming.** An event is "past" only if it has a *public* date that has passed. Events without a public date stay under upcoming, so "coming soon" shows no date.
 
-**Photos.** Upload goes to a Supabase Storage bucket called `event-images` (public to view by link; only the server can upload; JPG/PNG/WebP under 5 MB). Replacing or removing a photo deletes the old file. The site's image settings (`next.config.ts`) allow loading from that bucket.
+**Photos.** Upload goes to a Supabase Storage bucket called `event-images` (public to view by link; only the server can upload; JPG/PNG/WebP under 4 MB). Replacing or removing a photo deletes the old file. The site's image settings (`next.config.ts`) allow loading from that bucket.
 
 **Speed and freshness ("caching").** Public event data is remembered ("use cache") for up to an hour so pages load fast. When you save in admin, the site is told to forget it immediately (`updateTag("events")`), so your change shows at once. Editing the database directly (e.g. in the Supabase screen) does *not* do that, so changes made there can take up to an hour to show.
 

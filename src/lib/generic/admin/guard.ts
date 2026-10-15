@@ -1,5 +1,6 @@
 import "server-only";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
 import { createClient } from "@/lib/generic/supabase/server";
 
@@ -15,6 +16,7 @@ export async function isAllowedAdmin(email: string): Promise<boolean> {
 
 /** The signed-in user, but only if they are an admin. Asks Supabase to verify the session each time. */
 export async function getAdminUser() {
+  await connection(); // admin pages are always built per request, never ahead of time
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
   const email = data.user?.email;

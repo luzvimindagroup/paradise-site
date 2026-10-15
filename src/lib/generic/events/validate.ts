@@ -63,10 +63,10 @@ export function parseEvent(fd: FormData, tz: string): { ok: true; value: EventIn
 }
 
 export const IMAGE_TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
-export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+export const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // Vercel rejects requests over 4.5 MB
 
 export function checkImage(file: { type: string; size: number }): string | null {
   if (!IMAGE_TYPES[file.type]) return "The photo must be a JPG, PNG, or WebP.";
-  if (file.size > MAX_IMAGE_BYTES) return "The photo must be under 5 MB.";
+  if (file.size > MAX_IMAGE_BYTES) return "The photo must be under 4 MB. Try a smaller or more compressed copy.";
   return null;
 }
