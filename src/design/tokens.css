@@ -1,37 +1,45 @@
 /*
   Paradise design tokens — the ONE place for colors, type, spacing, radius.
   A future logo/palette swap is an edit to this file only.
-  Text/background pairs below were chosen for WCAG 2.1 AA (4.5:1) contrast.
-  --color-sun is a fill-only accent: never use it for text on paper.
+  Direction: black, white, and ONE gold accent (picked by Alan). Pairs are WCAG 2.1 AA:
+  ink/paper 21, ink-soft/surface 8.9, gold/paper 13.5, on-primary/gold 13.5,
+  chili/paper 7.7.
 */
 @theme {
-  /* Color: warm-neutral base, near-black text, ONE primary, two supporting */
-  --color-paper: #f2eee9;
-  --color-paper-deep: #e8e2da;
-  --color-ink: #1c1917;
-  --color-ink-soft: #55504a;
-  --color-lagoon: #0b6461; /* primary accent */
-  --color-lagoon-deep: #084744;
-  --color-hibiscus: #b8225a; /* supporting, sparingly */
-  --color-sun: #e9b52f; /* supporting, fills only */
+  /* Color: black base, white text, ONE primary (gold), chili only for errors */
+  --color-paper: #000000;
+  --color-paper-deep: #0d0d0d;
+  --color-ink: #ffffff;
+  --color-ink-soft: #b8b8b8;
+  --color-primary: #fcd116; /* flag-inspired gold */
+  --color-primary-deep: #ffe066; /* hover */
+  --color-surface: #151515; /* cards */
+  --color-field: #222222; /* inputs */
+  --color-on-primary: #000000;
+  --color-chili: #ff7a59; /* error text only */
 
   /* Type */
-  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-shoulders), ui-sans-serif, system-ui, sans-serif;
+  --font-wordmark: var(--font-cal-sans), var(--font-shoulders), ui-sans-serif, sans-serif;
   --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
 
   --text-xs: 0.8125rem;
   --text-sm: 0.9375rem;
   --text-base: 1.0625rem;
   --text-lg: 1.25rem;
-  --text-xl: 1.625rem;
-  --text-2xl: 2.25rem;
-  --text-3xl: 3.25rem;
-  --text-4xl: 4.75rem;
-  --text-5xl: 7rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.5rem;
+  --text-3xl: 3.5rem;
+  --text-4xl: 5rem;
+  --text-5xl: 8rem;
 
-  /* Radius: small and big only */
-  --radius-sm: 0.375rem;
-  --radius-lg: 1.5rem;
+  /* Radius: square-ish everywhere (ticket and poster feel) */
+  --radius-sm: 0.25rem;
+  --radius-lg: 0.25rem;
+
+  /* Hard offset shadow used by buttons and cards */
+  --shadow-pop: 4px 4px 0 var(--color-ink);
+  --shadow-card: 6px 6px 0 var(--color-primary);
 
   /* Spacing scale base (Tailwind multiplies this) */
   --spacing: 0.25rem;

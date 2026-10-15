@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Figtree } from "next/font/google";
+import { Big_Shoulders, Figtree, Cal_Sans } from "next/font/google";
+import { AnalyticsRoot } from "@/components/AnalyticsRoot";
 import { ALLOW_INDEXING, SITE } from "@/config/site";
 import "./globals.css";
 
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
+const shoulders = Big_Shoulders({
+  variable: "--font-shoulders",
   subsets: ["latin"],
+  weight: ["700", "800"],
+});
+
+const calSans = Cal_Sans({
+  variable: "--font-cal-sans",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 const figtree = Figtree({
@@ -26,8 +34,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${bricolage.variable} ${figtree.variable}`}>
-      <body className="min-h-dvh">{children}</body>
+    <html lang="en" className={`${shoulders.variable} ${figtree.variable} ${calSans.variable}`}>
+      <body className="min-h-dvh">
+        {children}
+        <AnalyticsRoot />
+      </body>
     </html>
   );
 }
