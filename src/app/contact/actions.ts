@@ -9,7 +9,7 @@ export type ContactState =
   | { status: "idle" }
   | { status: "error"; message: string; field?: ContactField }
   | { status: "not_connected"; message: string }
-  | { status: "sent" };
+  | { status: "sent"; category?: string };
 
 export async function sendContact(_prev: ContactState, formData: FormData): Promise<ContactState> {
   // Bots get the same "thanks" as people, but nothing is saved.
@@ -27,5 +27,5 @@ export async function sendContact(_prev: ContactState, formData: FormData): Prom
     category: v.category, name: v.name, email: v.email, message: v.message, page_url: v.pageUrl,
   });
   if (error) return { status: "error", message: "Something went wrong on our end. Please try again in a minute." };
-  return { status: "sent" };
+  return { status: "sent", category: v.category };
 }

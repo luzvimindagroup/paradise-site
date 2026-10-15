@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Big_Shoulders, Figtree, Cal_Sans } from "next/font/google";
+import { AnalyticsRoot } from "@/components/AnalyticsRoot";
 import { ALLOW_INDEXING, SITE } from "@/config/site";
 import "./globals.css";
 
@@ -34,7 +35,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${shoulders.variable} ${figtree.variable} ${calSans.variable}`}>
-      <body className="min-h-dvh">{children}</body>
+      <body className="min-h-dvh">
+        {children}
+        <AnalyticsRoot />
+      </body>
     </html>
   );
 }

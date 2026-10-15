@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { CONSENT_TEXT, KLAVIYO_SOURCE_LABEL, WELCOME_COOKIE } from "@/config/signup";
+import { PENDING_COOKIE, encodePending } from "@/lib/generic/analytics/pending";
 import { klaviyoConfigured, syncProfile, updateProperties } from "@/lib/generic/klaviyo";
 import { looksLikeBot, parseSignup, parseWelcome } from "@/lib/generic/signup/validate";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
@@ -89,6 +90,10 @@ export async function joinList(_prev: JoinState, formData: FormData): Promise<Jo
     .update({ klaviyo_status: klaviyoStatus, klaviyo_synced_at: klaviyoStatus === "synced" ? new Date().toISOString() : null })
     .eq("id", data.id);
 
+  // Note for the browser to report "waitlist_submit" once (only for brand-new signups, never repeats).
+  (await cookies()).set(PENDING_COOKIE, encodePending("waitlist_submit", s.sourceSlug), {
+    httpOnly: false, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 300, path: "/",
+  });
   (await cookies()).set(WELCOME_COOKIE, data.id, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

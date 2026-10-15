@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { useActionState, useEffect, useId } from "react";
 import { saveWelcome, type WelcomeState } from "@/app/actions";
+import { track } from "@/lib/generic/analytics/track";
 import { GENRES, GROUP_SIZES, HOW_HEARD, LANGUAGES, PRICE_BANDS, TICKET_INTEREST } from "@/config/signup";
 
 const idle: WelcomeState = { status: "idle" };
@@ -14,8 +15,10 @@ const chip =
 export function WelcomeForm() {
   const [state, action, pending] = useActionState(saveWelcome, idle);
   const uid = useId();
+  const saved = state.status === "saved";
+  useEffect(() => { if (saved) track("profile_complete"); }, [saved]);
 
-  if (state.status === "saved") {
+  if (saved) {
     return (
       <p role="status" className="font-display text-3xl leading-tight font-bold">
         Saved. Thanks, we&apos;ll keep you posted.

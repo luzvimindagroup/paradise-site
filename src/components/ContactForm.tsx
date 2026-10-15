@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { useActionState, useEffect, useId } from "react";
 import { sendContact, type ContactState } from "@/app/contact/actions";
 import { AttributionFields } from "@/components/AttributionFields";
 import { CONTACT_CATEGORIES } from "@/config/contact";
+import { track } from "@/lib/generic/analytics/track";
 
 const idle: ContactState = { status: "idle" };
 
@@ -11,6 +12,8 @@ export function ContactForm() {
   const [state, action, pending] = useActionState(sendContact, idle);
   const uid = useId();
   const err = state.status === "error" ? state : null;
+  const sentCategory = state.status === "sent" ? state.category : undefined;
+  useEffect(() => { if (sentCategory) track("contact_submit", { category: sentCategory }); }, [sentCategory]);
 
   const field =
     "block w-full min-h-14 rounded-sm border-[3px] border-ink bg-field px-4 text-base text-ink placeholder:text-ink-soft";
