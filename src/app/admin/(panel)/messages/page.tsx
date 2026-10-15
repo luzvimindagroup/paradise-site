@@ -12,7 +12,7 @@ export default async function MessagesPage() {
 
   return (
     <>
-      <h1 className="font-display text-5xl leading-none font-extrabold uppercase">Messages</h1>
+      <h1 className="font-display text-[1.5rem] leading-none font-extrabold uppercase">Messages</h1>
       {error && <p className="mt-4 text-chili">Couldn&apos;t load messages.</p>}
       {data?.length === 0 && <p className="mt-4 text-ink-soft">No messages yet.</p>}
       <ul className="mt-6 grid gap-4">

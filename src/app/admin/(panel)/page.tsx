@@ -27,7 +27,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <h1 className="font-display text-5xl leading-none font-extrabold uppercase">Dashboard</h1>
+      <h1 className="font-display text-[1.5rem] leading-none font-extrabold uppercase">Dashboard</h1>
       <dl className="mt-6 grid gap-4 sm:grid-cols-2">
         {tiles.map((t) => (
           <div key={t.label} className="rounded-sm border-[3px] border-ink bg-surface p-5">
