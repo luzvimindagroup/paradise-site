@@ -3,6 +3,7 @@
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { DISCIPLINES } from "@/config/artists";
+import { TIMEZONE } from "@/config/site";
 import { ARTISTS_TAG, ARTIST_IMAGE_BUCKET } from "@/lib/artists";
 import { requireAdmin } from "@/lib/generic/admin/guard";
 import { missingForPublishing } from "@/lib/generic/artists/public";
@@ -16,7 +17,8 @@ export async function saveArtist(_prev: ArtistFormState, formData: FormData): Pr
   await requireAdmin();
   const fail = (message: string): ArtistFormState => ({ status: "error", message });
 
-  const today = new Date().toISOString().slice(0, 10);
+  // "Today" in the site's own time zone (not UTC), so an evening entry can't be dated tomorrow.
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: TIMEZONE }).format(new Date());
   const parsed = parseArtist(formData, { disciplines: DISCIPLINES, today });
   if (!parsed.ok) return fail(parsed.message);
   const v = parsed.value;
@@ -25,9 +27,9 @@ export async function saveArtist(_prev: ArtistFormState, formData: FormData): Pr
   if (id && !/^[0-9a-f-]{36}$/.test(id)) return fail("That artist no longer exists.");
   const db = createAdminClient();
 
-  let existing: { image_path: string | null; image_alt: string | null } | null = null;
+  let existing: { slug: string; image_path: string | null; image_alt: string | null } | null = null;
   if (id) {
-    const { data } = await db.from("artists").select("image_path, image_alt").eq("id", id).maybeSingle();
+    const { data } = await db.from("artists").select("slug, image_path, image_alt").eq("id", id).maybeSingle();
     if (!data) return fail("That artist no longer exists.");
     existing = data;
   }
@@ -59,8 +61,10 @@ export async function saveArtist(_prev: ArtistFormState, formData: FormData): Pr
     if (blocked) { await discard(); return fail(blocked); }
   }
 
+  // Leaving the web address blank while editing keeps the current one (so shared links never break).
+  const slug = existing && !String(formData.get("slug") ?? "").trim() ? existing.slug : v.slug;
   const row = {
-    slug: v.slug, name: v.name, discipline: v.discipline, neighborhood: v.neighborhood, tagline: v.tagline,
+    slug, name: v.name, discipline: v.discipline, neighborhood: v.neighborhood, tagline: v.tagline,
     published: v.published, permission_on_file: v.permissionOnFile, permission_date: v.permissionDate,
     image_path: imagePath, image_alt: imageAlt, links: v.links,
   };
@@ -75,7 +79,9 @@ export async function saveArtist(_prev: ArtistFormState, formData: FormData): Pr
   }
 
   if (existing?.image_path && existing.image_path !== imagePath) {
-    await db.storage.from(ARTIST_IMAGE_BUCKET).remove([existing.image_path]);
+    const { error: rmError } = await db.storage.from(ARTIST_IMAGE_BUCKET).remove([existing.image_path]);
+    // A replaced photo that couldn't be deleted stays reachable by its link: say so in the server log (file name only, no personal data).
+    if (rmError) console.error(`Could not delete old artist photo ${existing.image_path}`);
   }
   updateTag(ARTISTS_TAG);
   redirect("/admin/artists");

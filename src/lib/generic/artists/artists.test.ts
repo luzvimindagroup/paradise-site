@@ -14,12 +14,17 @@ describe("links", () => {
     expect(cleanHttpsUrl("http://instagram.com/x")).toBeNull();
     expect(cleanHttpsUrl("javascript:alert(1)")).toBeNull();
     expect(cleanHttpsUrl("not a url")).toBeNull();
+    expect(cleanHttpsUrl("https://user:pw@evil.com")).toBeNull();
   });
   it("checks each fixed type against its own site", () => {
     expect(parseLinks(fields({ link_instagram: "https://www.instagram.com/a" })).ok).toBe(true);
     expect(parseLinks(fields({ link_instagram: "https://evil.com/instagram.com" }))).toMatchObject({ ok: false });
     expect(parseLinks(fields({ link_youtube: "https://youtu.be/abc" })).ok).toBe(true);
     expect(parseLinks(fields({ link_website: "https://mysite.com" })).ok).toBe(true);
+  });
+  it("drops a repeated address", () => {
+    const r = parseLinks(fields({ link_website: "https://a.com/", other_label_0: "Again", other_url_0: "https://a.com/" }));
+    expect(r).toMatchObject({ ok: true, links: [{ type: "website" }] });
   });
   it("needs a name for each 'other' link", () => {
     expect(parseLinks(fields({ other_url_0: "https://a.bandcamp.com" }))).toMatchObject({ ok: false });

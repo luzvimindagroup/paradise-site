@@ -1,4 +1,5 @@
 import { slugify } from "../slug";
+import { cleanHttpsUrl } from "../url";
 import { zonedToUtcIso } from "./zoned";
 
 const str = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
@@ -36,16 +37,8 @@ export function parseEvent(fd: FormData, tz: string): { ok: true; value: EventIn
   if (venuePublic && !venueName) return { ok: false, message: "Add a venue name before making it public." };
 
   const ticketRaw = str(fd.get("ticket_url"), 300);
-  let ticketUrl: string | null = null;
-  if (ticketRaw) {
-    try {
-      const u = new URL(ticketRaw);
-      if (u.protocol !== "https:") throw new Error();
-      ticketUrl = u.toString();
-    } catch {
-      return { ok: false, message: "The ticket link must be a full https:// address." };
-    }
-  }
+  const ticketUrl = ticketRaw ? cleanHttpsUrl(ticketRaw) : null;
+  if (ticketRaw && !ticketUrl) return { ok: false, message: "The ticket link must be a full https:// address." };
 
   return {
     ok: true,

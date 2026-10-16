@@ -1,3 +1,6 @@
+import { cleanHttpsUrl } from "../url";
+export { cleanHttpsUrl };
+
 // Fixed link types for the big platforms, plus "other" (with its own label) for everything else.
 export type LinkType =
   | "instagram" | "tiktok" | "youtube" | "spotify" | "apple_music" | "soundcloud" | "facebook" | "website" | "other";
@@ -16,17 +19,6 @@ export const FIXED_LINK_TYPES: { type: Exclude<LinkType, "other">; label: string
   { type: "website", label: "Website", hosts: [] },
 ];
 export const OTHER_LINK_SLOTS = 3;
-
-/** An https web address, or null. Rejects http, javascript:, and anything that isn't a clean URL. */
-export function cleanHttpsUrl(raw: string): string | null {
-  try {
-    const u = new URL(raw.trim());
-    if (u.protocol !== "https:" || !u.hostname.includes(".")) return null;
-    return u.toString();
-  } catch {
-    return null;
-  }
-}
 
 const onHost = (url: string, hosts: string[]) => {
   const h = new URL(url).hostname.toLowerCase();
@@ -55,7 +47,9 @@ export function parseLinks(get: (name: string) => string): LinkResult {
     if (!url) return { ok: false, message: `${label}: use a full https:// address.` };
     links.push({ type: "other", label, url });
   }
-  return { ok: true, links };
+  // The same address twice is just clutter: keep the first.
+  const seen = new Set<string>();
+  return { ok: true, links: links.filter((l) => (seen.has(l.url) ? false : (seen.add(l.url), true))) };
 }
 
 export const linkLabel = (l: ArtistLink) =>

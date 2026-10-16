@@ -38,8 +38,8 @@ async function Detail({ params }: { params: PageProps<"/artists/[slug]">["params
       {artist.tagline && <p className="mt-4 max-w-[50ch] text-lg text-ink-soft">{artist.tagline}</p>}
       {artist.links.length > 0 && (
         <ul className="mt-6 flex flex-wrap gap-3">
-          {artist.links.map((l) => (
-            <li key={l.url}>
+          {artist.links.map((l, i) => (
+            <li key={`${i}-${l.url}`}>
               <a
                 href={l.url} rel="noopener noreferrer"
                 className="inline-flex min-h-11 items-center rounded-sm border-[3px] border-ink px-4 text-sm font-bold hover:bg-surface"

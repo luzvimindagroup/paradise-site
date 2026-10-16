@@ -32,7 +32,8 @@ export async function getPublicArtist(slug: string): Promise<PublicArtist | null
   cacheTag(ARTISTS_TAG);
   cacheLife("hours");
   try {
-    const { data } = await createAdminClient().from("artists").select("*").eq("slug", slug).maybeSingle();
+    const { data, error } = await createAdminClient().from("artists").select("*").eq("slug", slug).maybeSingle();
+    if (error) throw error;
     return data ? toPublicArtist(data as ArtistRow, { imageBaseUrl: artistImageBase() }) : null;
   } catch {
     cacheLife("minutes");

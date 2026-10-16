@@ -23,9 +23,9 @@ export async function saveEvent(_prev: EventFormState, formData: FormData): Prom
   if (id && !/^[0-9a-f-]{36}$/.test(id)) return fail("That event no longer exists.");
   const db = createAdminClient();
 
-  let existing: { image_path: string | null; image_alt: string | null } | null = null;
+  let existing: { slug: string; image_path: string | null; image_alt: string | null } | null = null;
   if (id) {
-    const { data } = await db.from("events").select("image_path, image_alt").eq("id", id).maybeSingle();
+    const { data } = await db.from("events").select("slug, image_path, image_alt").eq("id", id).maybeSingle();
     if (!data) return fail("That event no longer exists.");
     existing = data;
   }
@@ -49,8 +49,10 @@ export async function saveEvent(_prev: EventFormState, formData: FormData): Prom
     return fail("Describe the photo in a few words (alt text) so everyone can follow it.");
   }
 
+  // Leaving the web address blank while editing keeps the current one (so shared links never break).
+  const slug = existing && !String(formData.get("slug") ?? "").trim() ? existing.slug : v.slug;
   const row = {
-    slug: v.slug, title: v.title, description: v.description, published: v.published,
+    slug, title: v.title, description: v.description, published: v.published,
     starts_at: v.startsAt, date_public: v.datePublic,
     venue_name: v.venueName, venue_public: v.venuePublic,
     ticket_url: v.ticketUrl, image_path: imagePath, image_alt: imageAlt,
@@ -67,7 +69,8 @@ export async function saveEvent(_prev: EventFormState, formData: FormData): Prom
 
   // Tidy up a photo that was replaced or removed.
   if (existing?.image_path && existing.image_path !== imagePath) {
-    await db.storage.from(IMAGE_BUCKET).remove([existing.image_path]);
+    const { error: rmError } = await db.storage.from(IMAGE_BUCKET).remove([existing.image_path]);
+    if (rmError) console.error(`Could not delete old event photo ${existing.image_path}`);
   }
   updateTag(EVENTS_TAG);
   redirect("/admin/events");
