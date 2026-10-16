@@ -34,6 +34,7 @@ export async function joinList(_prev: JoinState, formData: FormData): Promise<Jo
   }
 
   const consentedAt = new Date().toISOString();
+  const signupEventId = crypto.randomUUID(); // one id per signup, shared with the analytics event
   const db = createAdminClient();
   const { data, error } = await db
     .from("subscribers")
@@ -51,6 +52,8 @@ export async function joinList(_prev: JoinState, formData: FormData): Promise<Jo
       utm_medium: s.utm.medium,
       utm_campaign: s.utm.campaign,
       utm_content: s.utm.content,
+      fbclid: s.fbclid,
+      signup_event_id: signupEventId,
     })
     .select("id")
     .single();
@@ -95,7 +98,7 @@ export async function joinList(_prev: JoinState, formData: FormData): Promise<Jo
   }
 
   // Note for the browser to report "waitlist_submit" once (only for brand-new signups, never repeats).
-  (await cookies()).set(PENDING_COOKIE, encodePending("waitlist_submit", s.sourceSlug), {
+  (await cookies()).set(PENDING_COOKIE, encodePending("waitlist_submit", s.sourceSlug, signupEventId), {
     httpOnly: false, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 1800, path: "/",
   });
   (await cookies()).set(WELCOME_COOKIE, data.id, {

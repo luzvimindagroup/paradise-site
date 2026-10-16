@@ -3,10 +3,11 @@
 export const PENDING_COOKIE = "pending_event";
 
 export type PendingEvent = { event: string; params: Record<string, string> };
+// event_id lets a browser pixel and a later server-side report recognise the same conversion and count it once.
 
-/** "waitlist_submit|join" -> { event: "waitlist_submit", params: { source: "join" } } */
-export function encodePending(event: string, source: string): string {
-  return `${event}|${source}`;
+/** "waitlist_submit|join|<id>" -> { event: "waitlist_submit", params: { source: "join", event_id: "<id>" } } */
+export function encodePending(event: string, source: string, eventId?: string): string {
+  return eventId ? `${event}|${source}|${eventId}` : `${event}|${source}`;
 }
 
 const SAFE = /^[a-z0-9_-]{1,60}$/i;
@@ -19,7 +20,8 @@ export function parsePending(raw: string | undefined | null): PendingEvent | nul
   } catch {
     return null; // a tampered cookie must never crash the page
   }
-  const [event, source] = decoded.split("|");
+  const [event, source, eventId] = decoded.split("|");
   if (!event || !SAFE.test(event) || !source || !SAFE.test(source)) return null;
-  return { event, params: { source } };
+  if (eventId !== undefined && !SAFE.test(eventId)) return null;
+  return { event, params: eventId ? { source, event_id: eventId } : { source } };
 }

@@ -8,6 +8,13 @@ describe("pending events", () => {
       params: { source: "join" },
     });
   });
+  it("carries an event id when given", () => {
+    expect(parsePending(encodePending("waitlist_submit", "join", "abc-123"))).toEqual({
+      event: "waitlist_submit",
+      params: { source: "join", event_id: "abc-123" },
+    });
+    expect(parsePending("waitlist_submit|join|<bad>")).toBeNull();
+  });
   it("ignores empty or malformed values", () => {
     expect(parsePending(undefined)).toBeNull();
     expect(parsePending("")).toBeNull();

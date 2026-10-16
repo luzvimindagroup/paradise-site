@@ -2,9 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { SignupForm } from "@/components/SignupForm";
-import { getPublicArtist } from "@/lib/artists";
+import { getPublicArtist, getPublicArtists } from "@/lib/artists";
+
+// Pages that exist at build time are prepared ahead. Anything else is checked on request.
+export async function generateStaticParams() {
+  const artists = await getPublicArtists();
+  return artists.length ? artists.map((a) => ({ slug: a.slug })) : [{ slug: "_" }];
+}
 
 export async function generateMetadata({ params }: PageProps<"/artists/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -20,9 +25,9 @@ export async function generateMetadata({ params }: PageProps<"/artists/[slug]">)
   };
 }
 
-async function Detail({ params }: { params: PageProps<"/artists/[slug]">["params"] }) {
+export default async function ArtistPage({ params }: PageProps<"/artists/[slug]">) {
   const { slug } = await params;
-  const artist = await getPublicArtist(slug);
+  const artist = await getPublicArtist(slug); // checked BEFORE anything streams, so an unknown address is a real 404
   if (!artist) notFound();
 
   return (
@@ -55,13 +60,5 @@ async function Detail({ params }: { params: PageProps<"/artists/[slug]">["params
         <SignupForm source={`artist-${artist.slug}`} />
       </div>
     </main>
-  );
-}
-
-export default function ArtistPage({ params }: PageProps<"/artists/[slug]">) {
-  return (
-    <Suspense fallback={null}>
-      <Detail params={params} />
-    </Suspense>
   );
 }
