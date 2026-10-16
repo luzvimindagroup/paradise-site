@@ -37,7 +37,8 @@ export async function getPublicEvent(slug: string): Promise<PublicEvent | null> 
   cacheTag(EVENTS_TAG);
   cacheLife("hours");
   try {
-    const { data } = await createAdminClient().from("events").select("*").eq("slug", slug).maybeSingle();
+    const { data, error } = await createAdminClient().from("events").select("*").eq("slug", slug).maybeSingle();
+    if (error) throw error;
     return data ? toPublicEvent(data as EventRow, opts()) : null;
   } catch {
     cacheLife("minutes"); // retry soon

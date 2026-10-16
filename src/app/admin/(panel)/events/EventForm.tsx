@@ -1,8 +1,8 @@
 "use client";
 
+import { PhotoPicker } from "@/components/PhotoPicker";
 import { usePreservedForm } from "@/lib/generic/forms/usePreservedForm";
-import { useId, useState } from "react";
-import { MAX_IMAGE_BYTES } from "@/lib/generic/events/validate";
+import { useId } from "react";
 import { saveEvent, type EventFormState } from "./actions";
 
 export type EventFormValues = {
@@ -25,7 +25,6 @@ const help = "mt-1 text-sm text-ink-soft";
 export function EventForm({ values }: { values: EventFormValues }) {
   const [state, onSubmit, pending] = usePreservedForm(saveEvent, idle);
   const uid = useId();
-  const [photoProblem, setPhotoProblem] = useState<string | null>(null);
 
   return (
     <form method="post" onSubmit={onSubmit} className="grid max-w-2xl gap-6">
@@ -74,15 +73,8 @@ export function EventForm({ values }: { values: EventFormValues }) {
         <legend className="px-2 text-sm font-bold">Photo (optional)</legend>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {values.imageUrl && <img src={values.imageUrl} alt={values.imageAlt} className="max-h-48 w-auto rounded-sm" />}
-        <input
-          aria-label="Photo file" type="file" name="image" accept="image/jpeg,image/png,image/webp"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f && f.size > MAX_IMAGE_BYTES) { setPhotoProblem("That photo is over 4 MB. Choose a smaller one."); e.target.value = ""; }
-            else setPhotoProblem(null);
-          }} className="block w-full text-sm file:mr-4 file:min-h-11 file:cursor-pointer file:rounded-sm file:border-[3px] file:border-ink file:bg-primary file:px-4 file:font-bold file:text-on-primary" />
-        <p className={help}>JPG, PNG, or WebP, under 4 MB. Real photos of real people need their permission.</p>
-        {photoProblem && <p role="alert" className="text-sm font-semibold text-chili">{photoProblem}</p>}
+        <PhotoPicker />
+        <p className={help}>Any size: big photos are shrunk automatically (JPG, PNG, or WebP). Real photos of real people need their permission.</p>
         <div>
           <label htmlFor={`${uid}-alt`} className={label}>Describe the photo (alt text)</label>
           <input id={`${uid}-alt`} name="image_alt" defaultValue={values.imageAlt} className={field} />

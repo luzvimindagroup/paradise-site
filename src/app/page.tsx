@@ -104,7 +104,7 @@ export default async function Home() {
           {SITE.series} · {SITE.market}
         </p>
         <nav aria-label="Footer" className="mt-2 flex flex-wrap gap-x-5">
-          {[["Events", "/events"], ["About", "/about"], ["Contact", "/contact"], ["Privacy", "/privacy"], ["Terms", "/terms"]].map(([t, h]) => (
+          {[["Events", "/events"], ["Artists", "/artists"], ["About", "/about"], ["Contact", "/contact"], ["Privacy", "/privacy"], ["Terms", "/terms"]].map(([t, h]) => (
             <a key={h} href={h} className="inline-flex min-h-11 items-center underline">{t}</a>
           ))}
           <CookieSettingsButton className="inline-flex min-h-11 items-center underline" />

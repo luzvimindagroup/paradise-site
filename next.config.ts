@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-// Event photos live in Supabase Storage; allow next/image to load them.
+// Event and artist photos live in Supabase Storage; allow next/image to load them.
 const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname : null;
 
 if (!supabaseHost) console.warn("NEXT_PUBLIC_SUPABASE_URL is not set: event photos will not load in this build.");
@@ -10,7 +10,9 @@ const nextConfig: NextConfig = {
   experimental: { serverActions: { bodySizeLimit: "4.5mb" } },
   images: {
     remotePatterns: supabaseHost
-      ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/event-images/**" }]
+      ? ["event-images", "artist-images"].map((bucket) => ({
+          protocol: "https" as const, hostname: supabaseHost, pathname: `/storage/v1/object/public/${bucket}/**`,
+        }))
       : [],
   },
   cacheComponents: true,

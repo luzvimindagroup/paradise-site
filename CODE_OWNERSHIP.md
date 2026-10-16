@@ -9,6 +9,8 @@
 - `src/lib/generic/signup/` — signup and welcome validation, bot checks
 - `src/lib/generic/admin/` — admin guard (who may use /admin)
 - `src/lib/generic/analytics/` — consent, event tracking
+- `src/lib/generic/artists/` — artist gate, links, validation
+- `src/lib/generic/images/` — photo checks and upload
 - `src/lib/generic/events/` — event gate, validation, time zones
 - `src/lib/generic/contact/` — contact-form validation
 - `src/lib/generic/supabase/` — Supabase clients (admin, server, browser)

@@ -274,6 +274,22 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 **The fix.** `lib/generic/forms/usePreservedForm.ts` submits the form through `onSubmit` instead of `action=`, so the fields stay as typed (including a chosen photo). All five forms use it: signup, welcome, contact, admin login, and event. Trade-off: the forms now need JavaScript to submit (no "plain HTML" fallback). If someone taps Submit before the page has finished loading, nothing is saved, but because the forms are marked `method="post"` their typed email can't leak into the web address.
 
 ""
+## 10f. Artists
+
+**What you can do:** in `/admin/artists`, add, edit, publish, and unpublish artists. Each has a name, web address, discipline (Music, Comedy, Dance, DJ, Other: genre-neutral on purpose), neighborhood, one line about them, links, a photo with alt text, and a permission record. The public site gets `/artists` (a photo grid, A to Z) and `/artists/[slug]` (profile with their links and a signup form tagged with that artist, so you can see whose page brought signups).
+
+**The permission gate.** Your rule is that no artist appears publicly without written permission and their photo. It is enforced three times, so a mistake in one place can't expose someone:
+1. **The admin form** refuses to save "Published" unless "Written permission on file", its date, a photo, and alt text are all present.
+2. **The public gate** (`toPublicArtist` in `lib/generic/artists/public.ts`): even if a row says published, it returns nothing without permission and a photo. It also never includes the permission date.
+3. **The database** has a check that refuses a published row without permission, a date, and a photo.
+The site stores only the *date* of permission. Keep the actual written document (text, email, form) in your own records.
+
+**Links.** Fixed types for the big platforms (Instagram, TikTok, YouTube, Spotify, Apple Music, SoundCloud, Facebook, Website) plus three "Anything else" slots with a name you choose (Bandcamp, a show reel...). Every link must be a full `https://` address, and each fixed type must belong to its own site (an "Instagram" link has to be on instagram.com), which catches pasted-in mistakes. Links open with `rel="noopener noreferrer"`. Stored as a list in one database column (`links`).
+
+**Photos** use the same shared picker and uploader as events. **Auto-resize:** when you choose a photo, `components/PhotoPicker.tsx` shrinks it right in your browser (`lib/generic/images/resize.ts`): longest side at most 2000 px, re-saved as a JPEG at 85% quality, phone rotation respected. A 23 MB test photo became 1.5 MB, so the 4 MB upload limit no longer gets in the way. This has to happen in the browser, because the server never sees a file that is too big to send. The server still re-checks the size and the real file type, into a separate public bucket `artist-images`. The picture is never cropped (the site crops with CSS when it displays it). Favor warm or white-lit photos (brand color rule).
+
+**Files:** database `supabase/migrations/20261015010000_create_artists.sql`; engine `lib/generic/artists/` (links, gate, validation) plus `lib/generic/images/` and `lib/generic/slug.ts` (shared); wiring `lib/artists.ts`; options in `config/artists.ts`; admin `app/admin/(panel)/artists/`; public `app/artists/`, `components/ArtistCard.tsx`.
+
 ## 11. The project paperwork
 
 - **`CLAUDE.md`**: the standing rules Claude reads every session: the seven compliance hard stops, naming rules (never "Sama Soul", never "PH", never "Paradise Presents"), design rules, and how to work with you (plan first, small branches, screenshot every UI change, never commit secrets).
@@ -302,6 +318,7 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 | 10 | **Hardening to do before launch** (from the 2026-10-14 code review, deliberately deferred): rate-limit signups and contact (bots that skip the hidden timer field are only stopped by the honeypot); retry Klaviyo syncs that failed (the dashboard counts them, nothing retries yet); restrict where the login link may point (Supabase's redirect list already limits it); `AttributionFields` remembers UTMs only from the page the visitor first loaded. | Build Order step 7 |
 | 11 | **Events data check.** The first test event named a real-looking artist and venue with both public boxes ticked, and no agreement. It was set back to a draft. Before launch, review every event's title and description by hand. | Ongoing |
 | 12 | **"Soft 404" on unknown event/landing addresses** (from the events code review): a missing page streams a "not found" screen but with a 200 status instead of 404, so search engines may index nonexistent URLs. Not an issue while the site is noindex, but must be solved before launch, and the same pattern must be handled correctly in the landing pages (SEO is a stated requirement). | Before launch |
+| 13 | **Storage limits are layered, not identical** (4 MB app limit, 4.5 MB request limit, 5 MB bucket limit). Harmless because the strictest, 4 MB, always wins, and the browser shrinks photos long before that. If a replaced photo can't be deleted from storage it stays reachable by its link: the server log records the file name, so check the logs after changing a photo for a person whose permission was withdrawn. | Note |
 | 9 | **No GTM/GA4 yet.** Analytics is built but dormant until `NEXT_PUBLIC_GTM_ID` is set. Needs the company Google account. | Waiting on Alan |
 | 4 | **Gold-on-black check** with locals before the palette is final. | Open |
 | 5 | ~~Contact migration~~ applied 2026-10-14 and tested end to end. **No email alert yet** when a message arrives (check `/admin/messages`). | Partly done |
@@ -323,3 +340,6 @@ Whether people must click a confirmation email (double opt-in) is **a setting on
 | 2026-10-15 | Added section 10d: events (admin, public pages, the date/venue gate, Pacific time, photos, caching). |
 | 2026-10-15 | Added 10e: forms keep typed values on error. Photo limit is 4 MB (Next's 1 MB default was rejecting photos). Admin checks marked request-time. |
 | 2026-10-15 | Events code review: strict date checking (no Feb 31), real file-type check on photos, update-of-a-missing-event handled, 5-minute event cache, forms POST-only, event page canonical/OG tags. Open item 12 added. |
+| 2026-10-15 | Added section 10f: artists (permission gate in three places, fixed link types, shared image uploader). |
+| 2026-10-15 | Photo picker now auto-resizes in the browser (2000 px, JPEG), shared by events and artists. |
+| 2026-10-15 | Artists code review: failed reads no longer cached as "not found" (events too), Save is blocked while a photo is still being shrunk, permission dates use Pacific time, links with embedded passwords rejected and duplicates dropped, blank web address on edit keeps the current one, deleted-photo failures logged. |
