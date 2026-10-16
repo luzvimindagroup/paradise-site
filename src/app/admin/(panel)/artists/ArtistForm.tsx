@@ -1,10 +1,10 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId } from "react";
 import { DISCIPLINES, NEIGHBORHOODS } from "@/config/artists";
 import { FIXED_LINK_TYPES, OTHER_LINK_SLOTS, type ArtistLink } from "@/lib/generic/artists/links";
+import { PhotoPicker } from "@/components/PhotoPicker";
 import { usePreservedForm } from "@/lib/generic/forms/usePreservedForm";
-import { MAX_IMAGE_BYTES } from "@/lib/generic/images/validate";
 import { saveArtist, type ArtistFormState } from "./actions";
 
 export type ArtistFormValues = {
@@ -27,7 +27,6 @@ const help = "mt-1 text-sm text-ink-soft";
 export function ArtistForm({ values }: { values: ArtistFormValues }) {
   const [state, onSubmit, pending] = usePreservedForm(saveArtist, idle);
   const uid = useId();
-  const [photoProblem, setPhotoProblem] = useState<string | null>(null);
   const linkOf = (type: string) => values.links.find((l) => l.type === type)?.url ?? "";
   const others = values.links.filter((l) => l.type === "other");
 
@@ -85,17 +84,8 @@ export function ArtistForm({ values }: { values: ArtistFormValues }) {
         <legend className="px-2 text-sm font-bold">Photo (required to publish)</legend>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {values.imageUrl && <img src={values.imageUrl} alt={values.imageAlt} className="max-h-48 w-auto rounded-sm" />}
-        <input
-          aria-label="Photo file" type="file" name="image" accept="image/jpeg,image/png,image/webp"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f && f.size > MAX_IMAGE_BYTES) { setPhotoProblem("That photo is over 4 MB. Choose a smaller one."); e.target.value = ""; }
-            else setPhotoProblem(null);
-          }}
-          className="block w-full text-sm file:mr-4 file:min-h-11 file:cursor-pointer file:rounded-sm file:border-[3px] file:border-ink file:bg-primary file:px-4 file:font-bold file:text-on-primary"
-        />
-        <p className={help}>JPG, PNG, or WebP, under 4 MB. Favor warm or white-lit photos over red/blue stage lighting.</p>
-        {photoProblem && <p role="alert" className="text-sm font-semibold text-chili">{photoProblem}</p>}
+        <PhotoPicker />
+        <p className={help}>Any size: big photos are shrunk automatically (JPG, PNG, or WebP). Favor warm or white-lit photos over red/blue stage lighting.</p>
         <div>
           <label htmlFor={`${uid}-alt`} className={label}>Describe the photo (alt text)</label>
           <input id={`${uid}-alt`} name="image_alt" defaultValue={values.imageAlt} className={field} />

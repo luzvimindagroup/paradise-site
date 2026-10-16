@@ -286,7 +286,7 @@ The site stores only the *date* of permission. Keep the actual written document 
 
 **Links.** Fixed types for the big platforms (Instagram, TikTok, YouTube, Spotify, Apple Music, SoundCloud, Facebook, Website) plus three "Anything else" slots with a name you choose (Bandcamp, a show reel...). Every link must be a full `https://` address, and each fixed type must belong to its own site (an "Instagram" link has to be on instagram.com), which catches pasted-in mistakes. Links open with `rel="noopener noreferrer"`. Stored as a list in one database column (`links`).
 
-**Photos** use the same shared uploader as events (`lib/generic/images/`): 4 MB, real file-type check, into a separate public bucket `artist-images`. Favor warm or white-lit photos (brand color rule).
+**Photos** use the same shared picker and uploader as events. **Auto-resize:** when you choose a photo, `components/PhotoPicker.tsx` shrinks it right in your browser (`lib/generic/images/resize.ts`): longest side at most 2000 px, re-saved as a JPEG at 85% quality, phone rotation respected. A 23 MB test photo became 1.5 MB, so the 4 MB upload limit no longer gets in the way. This has to happen in the browser, because the server never sees a file that is too big to send. The server still re-checks the size and the real file type, into a separate public bucket `artist-images`. The picture is never cropped (the site crops with CSS when it displays it). Favor warm or white-lit photos (brand color rule).
 
 **Files:** database `supabase/migrations/20261015010000_create_artists.sql`; engine `lib/generic/artists/` (links, gate, validation) plus `lib/generic/images/` and `lib/generic/slug.ts` (shared); wiring `lib/artists.ts`; options in `config/artists.ts`; admin `app/admin/(panel)/artists/`; public `app/artists/`, `components/ArtistCard.tsx`.
 
@@ -340,3 +340,4 @@ The site stores only the *date* of permission. Keep the actual written document 
 | 2026-10-15 | Added 10e: forms keep typed values on error. Photo limit is 4 MB (Next's 1 MB default was rejecting photos). Admin checks marked request-time. |
 | 2026-10-15 | Events code review: strict date checking (no Feb 31), real file-type check on photos, update-of-a-missing-event handled, 5-minute event cache, forms POST-only, event page canonical/OG tags. Open item 12 added. |
 | 2026-10-15 | Added section 10f: artists (permission gate in three places, fixed link types, shared image uploader). |
+| 2026-10-15 | Photo picker now auto-resizes in the browser (2000 px, JPEG), shared by events and artists. |
