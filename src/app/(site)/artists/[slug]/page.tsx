@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps<"/artists/[slug]">)
 
 export default async function ArtistPage({ params }: PageProps<"/artists/[slug]">) {
   const { slug } = await params;
-  const artist = await getPublicArtist(slug); // checked BEFORE anything streams, so an unknown address is a real 404
+  const artist = await getPublicArtist(slug); // unknown address: Next streams its "not found" screen with a noindex tag (status stays 200; see guide open item 12)
   if (!artist) notFound();
 
   return (

@@ -37,7 +37,7 @@ export async function getPublicLanding(slug: string): Promise<PublicLanding | nu
   }
 }
 
-async function slugOf(table: "artists" | "events", id: string): Promise<string | null> {
+export async function slugOf(table: "artists" | "events", id: string): Promise<string | null> {
   const { data } = await createAdminClient().from(table).select("slug").eq("id", id).maybeSingle();
   return (data as { slug: string } | null)?.slug ?? null;
 }
@@ -50,11 +50,11 @@ export async function getPublishedLandingSlugs(): Promise<{ slug: string; update
   try {
     const { data, error } = await createAdminClient().from("landing_pages").select("slug, updated_at, index_in_search").eq("published", true);
     if (error) throw error;
-    const live: { slug: string; updatedAt: string; indexInSearch: boolean }[] = [];
-    for (const r of data as { slug: string; updated_at: string; index_in_search: boolean }[]) {
-      if (await getPublicLanding(r.slug)) live.push({ slug: r.slug, updatedAt: r.updated_at, indexInSearch: r.index_in_search });
-    }
-    return live;
+    const rows = data as { slug: string; updated_at: string; index_in_search: boolean }[];
+    const checks = await Promise.all(rows.map((r) => getPublicLanding(r.slug)));
+    return rows
+      .filter((_, i) => checks[i] !== null)
+      .map((r) => ({ slug: r.slug, updatedAt: r.updated_at, indexInSearch: r.index_in_search }));
   } catch {
     cacheLife("minutes");
     return [];

@@ -4,7 +4,8 @@ import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { getPublicArtist } from "@/lib/artists";
 import { getPublicEvent } from "@/lib/events";
-import { LANDING_IMAGE_BUCKET, LANDING_TAG } from "@/lib/landing";
+import { LANDING_IMAGE_BUCKET, LANDING_TAG, slugOf } from "@/lib/landing";
+import { isUuid } from "@/lib/generic/ids";
 import { requireAdmin } from "@/lib/generic/admin/guard";
 import { uploadImage } from "@/lib/generic/images/upload";
 import { blockedLinks } from "@/lib/generic/landing/public";
@@ -22,7 +23,7 @@ export async function saveLanding(_prev: LandingFormState, formData: FormData): 
   const v = parsed.value;
 
   const id = String(formData.get("id") ?? "") || null;
-  if (id && !/^[0-9a-f-]{36}$/.test(id)) return fail("That page no longer exists.");
+  if (id && !isUuid(id)) return fail("That page no longer exists.");
   const db = createAdminClient();
 
   let existing: { slug: string; image_path: string | null; image_alt: string | null } | null = null;
@@ -35,8 +36,8 @@ export async function saveLanding(_prev: LandingFormState, formData: FormData): 
   // Publishing needs everything it links to to be public already.
   if (v.published && (v.artistId || v.eventId)) {
     const [artist, event] = await Promise.all([
-      v.artistId ? slugFor(db, "artists", v.artistId).then((s) => (s ? getPublicArtist(s) : null)) : null,
-      v.eventId ? slugFor(db, "events", v.eventId).then((s) => (s ? getPublicEvent(s) : null)) : null,
+      v.artistId ? slugOf("artists", v.artistId).then((s) => (s ? getPublicArtist(s) : null)) : null,
+      v.eventId ? slugOf("events", v.eventId).then((s) => (s ? getPublicEvent(s) : null)) : null,
     ]);
     const blocked = blockedLinks({ artist_id: v.artistId, event_id: v.eventId }, { artist, event });
     if (blocked) return fail(blocked);
@@ -86,7 +87,3 @@ export async function saveLanding(_prev: LandingFormState, formData: FormData): 
   redirect("/admin/landing-pages");
 }
 
-async function slugFor(db: ReturnType<typeof createAdminClient>, table: "artists" | "events", id: string) {
-  const { data } = await db.from(table).select("slug").eq("id", id).maybeSingle();
-  return (data as { slug: string } | null)?.slug ?? null;
-}

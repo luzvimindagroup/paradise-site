@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { artistImageBase } from "@/lib/artists";
+import { isUuid } from "@/lib/generic/ids";
 import { requireAdmin } from "@/lib/generic/admin/guard";
 import type { ArtistRow } from "@/lib/generic/artists/types";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
@@ -11,7 +12,7 @@ export const metadata: Metadata = { title: "Edit artist" };
 export default async function EditArtistPage({ params }: PageProps<"/admin/artists/[id]">) {
   await requireAdmin();
   const { id } = await params;
-  if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
+  if (!isUuid(id)) notFound();
   const { data } = await createAdminClient().from("artists").select("*").eq("id", id).maybeSingle();
   if (!data) notFound();
   const a = data as ArtistRow;

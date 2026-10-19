@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: PageProps<"/events/[slug]">):
 
 export default async function EventPage({ params }: PageProps<"/events/[slug]">) {
   const { slug } = await params;
-  const event = await getPublicEvent(slug); // checked BEFORE anything streams, so an unknown address is a real 404
+  const event = await getPublicEvent(slug); // unknown address: Next streams its "not found" screen with a noindex tag (status stays 200; see guide open item 12)
   if (!event) notFound();
 
   return (

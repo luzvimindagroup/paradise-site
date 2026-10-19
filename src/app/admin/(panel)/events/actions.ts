@@ -4,6 +4,7 @@ import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { TIMEZONE } from "@/config/site";
 import { EVENTS_TAG, IMAGE_BUCKET } from "@/lib/events";
+import { isUuid } from "@/lib/generic/ids";
 import { requireAdmin } from "@/lib/generic/admin/guard";
 import { parseEvent } from "@/lib/generic/events/validate";
 import { uploadImage } from "@/lib/generic/images/upload";
@@ -20,7 +21,7 @@ export async function saveEvent(_prev: EventFormState, formData: FormData): Prom
   const v = parsed.value;
 
   const id = String(formData.get("id") ?? "") || null;
-  if (id && !/^[0-9a-f-]{36}$/.test(id)) return fail("That event no longer exists.");
+  if (id && !isUuid(id)) return fail("That event no longer exists.");
   const db = createAdminClient();
 
   let existing: { slug: string; image_path: string | null; image_alt: string | null } | null = null;

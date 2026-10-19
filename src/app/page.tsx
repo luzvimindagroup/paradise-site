@@ -24,7 +24,7 @@ export default async function Home() {
   const featured = await getFeaturedEvent();
   return (
     <>
-      <SiteHeader showWordmark={false} />
+      <SiteHeader showWordmark={false} joinHref="#join" />
 
       <main>
         <section className="mx-auto grid max-w-6xl gap-5 px-5 pt-0 pb-12 sm:px-10 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16 lg:pt-12 lg:pb-20">

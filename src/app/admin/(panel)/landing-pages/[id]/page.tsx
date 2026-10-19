@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { isUuid } from "@/lib/generic/ids";
 import { requireAdmin } from "@/lib/generic/admin/guard";
 import type { LandingRow } from "@/lib/generic/landing/types";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
@@ -12,7 +13,7 @@ export const metadata: Metadata = { title: "Edit landing page" };
 export default async function EditLandingPage({ params }: PageProps<"/admin/landing-pages/[id]">) {
   await requireAdmin();
   const { id } = await params;
-  if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
+  if (!isUuid(id)) notFound();
   const { data } = await createAdminClient().from("landing_pages").select("*").eq("id", id).maybeSingle();
   if (!data) notFound();
   const p = data as LandingRow;

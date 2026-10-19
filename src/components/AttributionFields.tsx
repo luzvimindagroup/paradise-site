@@ -19,15 +19,21 @@ function snapshot(): string {
     referrer: document.referrer,
   };
   TRACKED.forEach((k) => { const v = q.get(k); if (v) fresh[k] = v.slice(0, 200); });
-  const hasUtm = TRACKED.some((k) => fresh[k]);
+  const hasUtm = UTMS.some((k) => fresh[k]); // only real campaign tags count; Facebook adds fbclid to every outbound link
 
   // A link with UTM tags (a new ad click) replaces what we remembered.
   // Otherwise keep the first-touch info from the visitor's earlier page.
   let first = fresh;
   try {
     const saved = window.localStorage.getItem(KEY);
-    if (saved && !hasUtm) first = JSON.parse(saved);
-    else window.localStorage.setItem(KEY, JSON.stringify(fresh));
+    if (saved && !hasUtm) {
+      first = JSON.parse(saved);
+      // Keep the remembered campaign, but note a newer ad click id if we didn't have one.
+      CLICK_IDS.forEach((k) => { if (fresh[k] && !first[k]) first[k] = fresh[k]; });
+      window.localStorage.setItem(KEY, JSON.stringify(first));
+    } else {
+      window.localStorage.setItem(KEY, JSON.stringify(fresh));
+    }
   } catch {}
   return (cached = JSON.stringify({ ...first, started_at: String(Date.now()) }));
 }

@@ -1,6 +1,7 @@
 import "server-only";
-import type { Choice } from "@/app/admin/(panel)/landing-pages/LandingForm";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
+
+export type Choice = { id: string; label: string };
 
 /** The artists and events an admin can link a landing page to (drafts included; publishing checks they're public). */
 export async function getLinkChoices(): Promise<{ artists: Choice[]; events: Choice[] }> {

@@ -13,6 +13,7 @@ describe("slugify", () => {
   it("makes a clean web address", () => {
     expect(slugify("Paradise Sessions: Vol. 1!")).toBe("paradise-sessions-vol-1");
     expect(slugify("Café Noche")).toBe("cafe-noche");
+    expect(slugify("a".repeat(59) + " x")).toBe("a".repeat(59)); // never ends in a hyphen after the cut
   });
 });
 

@@ -1,7 +1,7 @@
+import { isUuid } from "../ids";
 import { slugify } from "../slug";
 
 const str = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
-const UUID = /^[0-9a-f-]{36}$/;
 
 export type LandingInput = {
   slug: string;
@@ -28,7 +28,7 @@ export function parseLanding(fd: FormData): { ok: true; value: LandingInput } | 
 
   const link = (name: string) => {
     const v = str(fd.get(name), 40);
-    return UUID.test(v) ? v : null;
+    return isUuid(v) ? v : null;
   };
   return {
     ok: true,

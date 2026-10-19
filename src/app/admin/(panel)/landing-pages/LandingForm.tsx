@@ -1,7 +1,9 @@
 "use client";
 
 import { useId, useState } from "react";
+import { SITE } from "@/config/site";
 import { PhotoPicker } from "@/components/PhotoPicker";
+import type { Choice } from "@/lib/landing-admin";
 import { usePreservedForm } from "@/lib/generic/forms/usePreservedForm";
 import { saveLanding, type LandingFormState } from "./actions";
 
@@ -10,7 +12,6 @@ export type LandingFormValues = {
   artistId: string; eventId: string; imageUrl: string | null; imageAlt: string;
   seoTitle: string; seoDescription: string; hideFromSearch: boolean; published: boolean;
 };
-export type Choice = { id: string; label: string };
 
 export const EMPTY_LANDING: LandingFormValues = {
   headline: "", slug: "", subheadline: "", body: "", ctaLabel: "Get first access", artistId: "", eventId: "",
@@ -112,7 +113,7 @@ export function LandingForm({ values, artists, events }: { values: LandingFormVa
         </div>
         <div aria-label="Search result preview" className="rounded-sm bg-paper-deep p-4">
           <p className="text-xs text-ink-soft">What it may look like in search</p>
-          <p className="mt-1 text-lg text-primary">{shownTitle.slice(0, 70)} | Paradise Sessions</p>
+          <p className="mt-1 text-lg text-primary">{shownTitle.slice(0, 70)} | {SITE.series}</p>
           <p className="text-sm text-ink-soft">{shownDesc.slice(0, 160)}</p>
         </div>
         <label className="flex items-start gap-3">

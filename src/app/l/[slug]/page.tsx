@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps<"/l/[slug]">): Prom
 
 export default async function LandingPage({ params }: PageProps<"/l/[slug]">) {
   const { slug } = await params;
-  const page = await getPublicLanding(slug); // checked BEFORE anything streams, so an unknown address is a real 404
+  const page = await getPublicLanding(slug); // unknown address: Next streams its "not found" screen with a noindex tag (status stays 200; see guide open item 12)
   if (!page) notFound();
 
   const where = [page.event?.dateLabel, page.event?.venue].filter(Boolean).join(" · ");

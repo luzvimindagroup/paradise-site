@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { DISCIPLINES } from "@/config/artists";
 import { TIMEZONE } from "@/config/site";
 import { ARTISTS_TAG, ARTIST_IMAGE_BUCKET } from "@/lib/artists";
+import { isUuid } from "@/lib/generic/ids";
 import { requireAdmin } from "@/lib/generic/admin/guard";
 import { missingForPublishing } from "@/lib/generic/artists/public";
 import { parseArtist } from "@/lib/generic/artists/validate";
@@ -24,7 +25,7 @@ export async function saveArtist(_prev: ArtistFormState, formData: FormData): Pr
   const v = parsed.value;
 
   const id = String(formData.get("id") ?? "") || null;
-  if (id && !/^[0-9a-f-]{36}$/.test(id)) return fail("That artist no longer exists.");
+  if (id && !isUuid(id)) return fail("That artist no longer exists.");
   const db = createAdminClient();
 
   let existing: { slug: string; image_path: string | null; image_alt: string | null } | null = null;
