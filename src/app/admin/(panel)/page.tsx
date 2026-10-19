@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SOUTH_BAY_ZIPS } from "@/config/south-bay";
 import { requireAdmin } from "@/lib/generic/admin/guard";
+import { RetryKlaviyoButton } from "./RetryKlaviyoButton";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
 import { allRows } from "@/lib/generic/supabase/all-rows";
 
@@ -54,6 +55,7 @@ export default async function DashboardPage() {
           </div>
         ))}
       </dl>
+      <RetryKlaviyoButton count={failed.count ?? 0} />
 
       <h2 className="mt-10 font-display text-xl font-extrabold uppercase">Signups by source</h2>
       {bySource.failed ? (

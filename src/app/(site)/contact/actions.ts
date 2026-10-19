@@ -1,7 +1,9 @@
 "use server";
 
 import { CONTACT_CATEGORIES } from "@/config/contact";
+import { LIMITS, TOO_MANY } from "@/config/rate-limits";
 import { parseContact, type ContactField } from "@/lib/generic/contact/validate";
+import { allowAttempt } from "@/lib/generic/rate-limit/limit";
 import { looksLikeBot } from "@/lib/generic/signup/validate";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
 
@@ -23,6 +25,9 @@ export async function sendContact(_prev: ContactState, formData: FormData): Prom
   }
 
   const v = parsed.value;
+  if (!(await allowAttempt(LIMITS.contactIp)) || !(await allowAttempt(LIMITS.contactEmail, { subject: v.email }))) {
+    return { status: "error", message: TOO_MANY };
+  }
   const { error } = await createAdminClient().from("contact_messages").insert({
     category: v.category, name: v.name, email: v.email, message: v.message, page_url: v.pageUrl,
   });

@@ -2,9 +2,12 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { CONSENT_TEXT, KLAVIYO_SOURCE_LABEL, WELCOME_COOKIE } from "@/config/signup";
+import { LIMITS, TOO_MANY } from "@/config/rate-limits";
+import { CONSENT_TEXT, WELCOME_COOKIE } from "@/config/signup";
 import { PENDING_COOKIE, encodePending } from "@/lib/generic/analytics/pending";
-import { klaviyoConfigured, syncProfile, updateProperties } from "@/lib/generic/klaviyo";
+import { klaviyoConfigured, updateProperties } from "@/lib/generic/klaviyo";
+import { allowAttempt } from "@/lib/generic/rate-limit/limit";
+import { syncSubscriber } from "@/lib/klaviyo-sync";
 import { looksLikeBot, parseSignup, parseWelcome } from "@/lib/generic/signup/validate";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
 
@@ -31,6 +34,9 @@ export async function joinList(_prev: JoinState, formData: FormData): Promise<Jo
 
   if (!supabaseConfigured()) {
     return { status: "not_connected", message: "The list isn't open yet, so we haven't saved your email. Please check back soon." };
+  }
+  if (!(await allowAttempt(LIMITS.signupIp)) || !(await allowAttempt(LIMITS.signupEmail, { subject: s.email }))) {
+    return { status: "error", message: TOO_MANY };
   }
 
   const consentedAt = new Date().toISOString();
@@ -67,21 +73,10 @@ export async function joinList(_prev: JoinState, formData: FormData): Promise<Jo
   let klaviyoStatus: "synced" | "failed" | "skipped" = "skipped";
   if (klaviyoConfigured()) {
     try {
-      await syncProfile({
-        email: s.email,
-        zip: s.zip,
-        source: KLAVIYO_SOURCE_LABEL,
-        properties: {
-          language: s.language,
-          language_assumed: s.languageAssumed,
-          signup_source: s.sourceSlug,
-          signup_page: s.pageUrl,
-          referrer: s.referrer,
-          utm_source: s.utm.source,
-          utm_medium: s.utm.medium,
-          utm_campaign: s.utm.campaign,
-          utm_content: s.utm.content,
-        },
+      await syncSubscriber({
+        email: s.email, zip: s.zip, language: s.language, language_assumed: s.languageAssumed,
+        source_slug: s.sourceSlug, page_url: s.pageUrl, referrer: s.referrer,
+        utm_source: s.utm.source, utm_medium: s.utm.medium, utm_campaign: s.utm.campaign, utm_content: s.utm.content,
       });
       klaviyoStatus = "synced";
     } catch {

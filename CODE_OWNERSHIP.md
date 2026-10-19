@@ -9,6 +9,7 @@
 - `src/lib/generic/signup/` — signup and welcome validation, bot checks
 - `src/lib/generic/admin/` — admin guard (who may use /admin)
 - `src/lib/generic/analytics/` — consent, event tracking
+- `src/lib/generic/rate-limit/` — attempt counting with scrambled keys
 - `src/lib/generic/csv/` — spreadsheet export
 - `src/lib/generic/landing/` — landing-page gate, validation, structured data
 - `src/lib/generic/artists/` — artist gate, links, validation
