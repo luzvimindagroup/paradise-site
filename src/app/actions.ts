@@ -32,10 +32,11 @@ export async function joinList(_prev: JoinState, formData: FormData): Promise<Jo
   if (!parsed.ok) return { status: "error", ...parsed.error };
   const s = parsed.value;
 
-  if (!(await allowAttempt(LIMITS.signup))) return { status: "error", message: TOO_MANY };
-
   if (!supabaseConfigured()) {
     return { status: "not_connected", message: "The list isn't open yet, so we haven't saved your email. Please check back soon." };
+  }
+  if (!(await allowAttempt(LIMITS.signupIp)) || !(await allowAttempt(LIMITS.signupEmail, { subject: s.email }))) {
+    return { status: "error", message: TOO_MANY };
   }
 
   const consentedAt = new Date().toISOString();

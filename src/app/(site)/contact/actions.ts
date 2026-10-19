@@ -19,13 +19,15 @@ export async function sendContact(_prev: ContactState, formData: FormData): Prom
 
   const parsed = parseContact(formData, CONTACT_CATEGORIES);
   if (!parsed.ok) return { status: "error", field: parsed.field, message: parsed.message };
-  if (!(await allowAttempt(LIMITS.contact))) return { status: "error", message: TOO_MANY };
 
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return { status: "not_connected", message: "Messages aren't open yet, so we haven't saved yours. Please check back soon." };
   }
 
   const v = parsed.value;
+  if (!(await allowAttempt(LIMITS.contactIp)) || !(await allowAttempt(LIMITS.contactEmail, { subject: v.email }))) {
+    return { status: "error", message: TOO_MANY };
+  }
   const { error } = await createAdminClient().from("contact_messages").insert({
     category: v.category, name: v.name, email: v.email, message: v.message, page_url: v.pageUrl,
   });

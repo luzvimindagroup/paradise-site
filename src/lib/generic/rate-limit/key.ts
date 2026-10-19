@@ -1,10 +1,14 @@
 import { createHash } from "node:crypto";
 
-/** The visitor's network address as the hosting platform reports it. Null when unknown. */
+/**
+ * The visitor's network address as the hosting platform reports it. Null when unknown.
+ * Prefers headers the platform itself sets (Vercel: x-real-ip); the first x-forwarded-for entry
+ * is a fallback only, since a client can forge it behind a proxy that appends rather than replaces.
+ */
 export function clientIp(get: (name: string) => string | null): string | null {
-  const fwd = get("x-forwarded-for");
-  const first = fwd?.split(",")[0]?.trim();
-  return first || get("x-real-ip")?.trim() || null;
+  const trusted = get("x-real-ip")?.trim() || get("x-vercel-forwarded-for")?.split(",")[0]?.trim();
+  if (trusted) return trusted;
+  return get("x-forwarded-for")?.split(",")[0]?.trim() || null;
 }
 
 /**

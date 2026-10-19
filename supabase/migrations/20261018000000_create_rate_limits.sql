@@ -9,7 +9,7 @@ create table public.rate_limits (
 alter table public.rate_limits enable row level security;
 revoke all on public.rate_limits from anon, authenticated;
 
--- Count one hit for `p_key` inside a rolling window. Returns true while under the limit.
+-- Count one hit for `p_key` inside a fixed window that restarts once it ages out. Returns true while under the limit.
 create or replace function public.rate_limit_hit(p_key text, p_window_seconds int, p_max int)
 returns boolean
 language plpgsql
@@ -26,10 +26,8 @@ begin
     window_start = case when public.rate_limits.window_start < v_cutoff then now() else public.rate_limits.window_start end
   returning hits into v_hits;
 
-  -- Occasionally sweep stale counters so the table stays tiny.
-  if random() < 0.01 then
-    delete from public.rate_limits where window_start < now() - interval '1 day';
-  end if;
+  -- Sweep stale counters every time (the table is tiny), so nothing lingers past a day.
+  delete from public.rate_limits where window_start < now() - interval '1 day' and key <> p_key;
 
   return v_hits <= p_max;
 end;

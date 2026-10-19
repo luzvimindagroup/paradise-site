@@ -20,7 +20,7 @@ export async function requestLoginLink(_prev: LoginState, formData: FormData): P
     return { status: "error", message: "Login isn't connected to the database yet." };
   }
 
-  if (!(await allowAttempt(LIMITS.loginIp)) || !(await allowAttempt(LIMITS.loginEmail, email))) {
+  if (!(await allowAttempt(LIMITS.loginIp)) || !(await allowAttempt(LIMITS.loginIpEmail, { subject: email, withIp: true }))) {
     return { status: "error", message: TOO_MANY };
   }
 

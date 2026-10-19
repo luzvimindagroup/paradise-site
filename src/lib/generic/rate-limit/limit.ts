@@ -12,18 +12,25 @@ let warnedMissing = false;
  * through the database. If the database function isn't installed yet, everything is allowed
  * and a warning is logged once, so a missing migration never blocks real people.
  */
-export async function allowAttempt(rule: LimitRule, subject?: string | null): Promise<boolean> {
+export async function allowAttempt(rule: LimitRule, opts: { subject?: string | null; withIp?: boolean } = {}): Promise<boolean> {
   const salt = process.env.RATE_LIMIT_SALT || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!salt) return true;
+  if (!salt || !process.env.NEXT_PUBLIC_SUPABASE_URL) return true;
   const h = await headers();
-  const who = subject ?? clientIp((n) => h.get(n));
-  if (!who) return true; // nothing to key on (local dev without a proxy)
+  const ip = clientIp((n) => h.get(n));
+  // Key on the subject (an email), the connection, or both.
+  const parts = opts.subject ? (opts.withIp ? [ip, opts.subject] : [opts.subject]) : [ip];
+  if (parts.some((x) => !x)) return true; // nothing to key on (local dev without a proxy)
 
-  const { data, error } = await createAdminClient().rpc("rate_limit_hit", {
-    p_key: limitKey(rule.purpose, who, salt),
-    p_window_seconds: rule.windowSeconds,
-    p_max: rule.max,
-  });
+  let data: boolean | null = null, error: unknown = null;
+  try {
+    ({ data, error } = await createAdminClient().rpc("rate_limit_hit", {
+      p_key: limitKey(rule.purpose, parts.join("|"), salt),
+      p_window_seconds: rule.windowSeconds,
+      p_max: rule.max,
+    }));
+  } catch (e) {
+    error = e;
+  }
   if (error) {
     if (!warnedMissing) {
       warnedMissing = true;
