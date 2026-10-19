@@ -372,7 +372,7 @@ Done on 2026-10-18 without needing Alan:
 | # | Item | Status |
 |---|---|---|
 | 1 | ~~Double opt-in~~ verified 2026-10-19 with a test signup: confirmation email arrived, consent stamped on the click. The `/welcome` wording is correct. | Done |
-| 16 | **Domain not connected.** `paradisesessions.com` is registered at Porkbun but still shows Porkbun's parking page. The live site is at `https://paradise-site-neon.vercel.app`. To connect: Vercel → project → Settings → Domains → add `paradisesessions.com` and `www`; copy the A and CNAME records Vercel shows into Porkbun → DNS (removing the parking records). After that, set the Supabase redirect URL to `https://paradisesessions.com/**`. Share images, canonical links, and the sitemap already assume the real domain. | Open, before launch |
+| 16 | **Domain connected 2026-10-19.** `paradisesessions.com` (Production) and `www` (redirects to the bare name) were added in Vercel → Settings → Domains; Porkbun DNS got an A record (`216.198.79.1`) and a CNAME for `www`. Verified: the site serves at the real address, `www` and `http` redirect with a 308, still noindex. The old `paradise-site-neon.vercel.app` keeps working too. Supabase Auth → URL Configuration must list `https://paradisesessions.com/**` as a redirect URL (and Site URL set to the domain) or the admin magic link is refused at the new address. | Done; Supabase URL to confirm |
 | 2 | **Error color.** Errors use coral ("chili"). Rule clarified by Alan 2026-10-14: avoid red and blue because of gang affiliation, but an occasional use is fine as long as neither predominates. Coral is a minor, error-only use. | Low priority. Alan will revisit later. |
 | 3 | **Privacy page** placeholder now covers contact messages, browser memory, the signup cookie, and analytics (updated 2026-10-14). | Counsel still has to review. Keep updating it whenever a feature collects new data. |
 | 10 | ~~Hardening~~: rate limiting and Klaviyo retry built 2026-10-18 (section 10j). The `rate_limits` SQL was run 2026-10-19, so rate limiting is live. | Done |
@@ -414,3 +414,4 @@ Done on 2026-10-18 without needing Alan:
 | 2026-10-18 | Hardening review: per-email limits replace crowd-unfriendly per-connection ones; admin login can't be locked out by a stranger; platform IP header preferred; retry batches of 20; sweep on every call; privacy note widened. |
 | 2026-10-19 | Open items: rate-limit SQL run, GTM id set in Vercel. |
 | 2026-10-19 | GA4 property and GTM tags published and tested end to end; double opt-in verified (items 1 and 9 done). New item 16: connect the domain to Vercel. |
+| 2026-10-19 | Domain connected: paradisesessions.com live on Vercel, www and http redirect. Item 16 updated with the Supabase redirect-URL step. |
