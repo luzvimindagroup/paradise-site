@@ -326,6 +326,14 @@ Every public page except landing pages now shares one header and one footer (`co
 
 **How it's wired:** the inner pages moved into a folder named `app/(site)/`. The parentheses make a "route group": the folder shares one layout (`(site)/layout.tsx`, which adds the header and footer) without changing any web address. The home page, landing pages (`app/l/`), and admin sit outside that folder, so they decide for themselves. The old "Back" links on inner pages were removed, since the header replaces them.
 
+## 10i. Signup export and "signups by source"
+
+**Download:** the admin dashboard has a **Download list (CSV)** button. It produces a spreadsheet file (`subscribers-<date>.csv`) with every signup: email, ZIP, language, consent time and wording, which page they joined from, UTM tags and ad click id, the optional answers (group size, price band, genres...), and the Klaviyo sync status. Times are shown in Pacific time. It opens in Excel, Numbers, or Google Sheets. This is your own copy of the list, and it also serves as the backup export the build brief asks for.
+
+**Safety details:** only a signed-in admin can download it (`app/admin/(panel)/export/route.ts` checks the same guard as every admin page; anyone else gets sent to login). The file is never cached. Cells that begin with `=`, `+`, `-`, or `@` get a leading space, because spreadsheets would otherwise run them as formulas: a known trick for smuggling commands into a sheet through a signup form. The CSV writer (`lib/generic/csv/csv.ts`) is generic and tested.
+
+**Signups by source:** the dashboard now lists how many signups came from each page: `home`, `join`, `events`, `about`, `artist-<name>`, `l-<landing page>`, and so on. This is the quickest way to see which link, QR code, or ad is working. (Per-campaign detail is in the CSV's UTM columns.)
+
 ## 11. The project paperwork
 
 - **`CLAUDE.md`**: the standing rules Claude reads every session: the seven compliance hard stops, naming rules (never "Sama Soul", never "PH", never "Paradise Presents"), design rules, and how to work with you (plan first, small branches, screenshot every UI change, never commit secrets).
@@ -383,3 +391,4 @@ Every public page except landing pages now shares one header and one footer (`co
 | 2026-10-16 | Added 10g: landing pages with per-page SEO, sitemap, JSON-LD, ad-tracking readiness (landing_view, event_id, fbclid). Detail pages use the "check before streaming" pattern. Open item 12 reclassified. |
 | 2026-10-18 | Added 10h: shared header and footer via the `(site)` route group. |
 | 2026-10-18 | Landing pages + header code review: an ad click id no longer wipes a remembered campaign; web addresses can't end in a hyphen; long landing addresses keep their signup tag; home Join button scrolls to the form; one shared id check (`lib/generic/ids.ts`); brand strings from config. |
+| 2026-10-18 | Added 10i: CSV export and signups-by-source table. |
