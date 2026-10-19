@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { TIMEZONE } from "@/config/site";
 import { IMAGE_BUCKET } from "@/lib/events";
+import { isUuid } from "@/lib/generic/ids";
 import { requireAdmin } from "@/lib/generic/admin/guard";
 import type { EventRow } from "@/lib/generic/events/types";
 import { utcToZonedInput } from "@/lib/generic/events/zoned";
@@ -13,7 +14,7 @@ export const metadata: Metadata = { title: "Edit event" };
 export default async function EditEventPage({ params }: PageProps<"/admin/events/[id]">) {
   await requireAdmin();
   const { id } = await params;
-  if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
+  if (!isUuid(id)) notFound();
   const { data } = await createAdminClient().from("events").select("*").eq("id", id).maybeSingle();
   if (!data) notFound();
   const e = data as EventRow;

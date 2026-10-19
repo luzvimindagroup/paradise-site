@@ -2,9 +2,15 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { SignupForm } from "@/components/SignupForm";
-import { getPublicEvent } from "@/lib/events";
+import { getPublicEvent, getPublicEvents } from "@/lib/events";
+
+// Pages that exist at build time are prepared ahead. Anything else is checked on request.
+export async function generateStaticParams() {
+  const { upcoming, past } = await getPublicEvents();
+  const all = [...upcoming, ...past];
+  return all.length ? all.map((e) => ({ slug: e.slug })) : [{ slug: "_" }];
+}
 
 export async function generateMetadata({ params }: PageProps<"/events/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -20,9 +26,9 @@ export async function generateMetadata({ params }: PageProps<"/events/[slug]">):
   };
 }
 
-async function Detail({ params }: { params: PageProps<"/events/[slug]">["params"] }) {
+export default async function EventPage({ params }: PageProps<"/events/[slug]">) {
   const { slug } = await params;
-  const event = await getPublicEvent(slug);
+  const event = await getPublicEvent(slug); // unknown address: Next streams its "not found" screen with a noindex tag (status stays 200; see guide open item 12)
   if (!event) notFound();
 
   return (
@@ -51,13 +57,5 @@ async function Detail({ params }: { params: PageProps<"/events/[slug]">["params"
         <SignupForm source={`event-${event.slug}`} />
       </div>
     </main>
-  );
-}
-
-export default function EventPage({ params }: PageProps<"/events/[slug]">) {
-  return (
-    <Suspense fallback={null}>
-      <Detail params={params} />
-    </Suspense>
   );
 }

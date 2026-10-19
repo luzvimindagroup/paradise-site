@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { EventCard } from "@/components/EventCard";
 import { SignupForm } from "@/components/SignupForm";
 import { getPublicEvents } from "@/lib/events";
@@ -13,8 +12,7 @@ export default async function EventsPage() {
   const { upcoming, past } = await getPublicEvents();
   return (
     <main className="mx-auto max-w-2xl px-5 py-6 sm:px-10 sm:py-12">
-      <Link href="/" className="inline-flex min-h-11 items-center text-sm font-bold underline">Back</Link>
-      <h1 className="mt-6 font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.95] font-extrabold uppercase">Events</h1>
+      <h1 className="font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.95] font-extrabold uppercase">Events</h1>
 
       {upcoming.length > 0 ? (
         <ul className="mt-8 grid gap-6">{upcoming.map((e) => <EventCard key={e.slug} event={e} />)}</ul>

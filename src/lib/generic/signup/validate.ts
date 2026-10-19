@@ -19,6 +19,7 @@ export type SignupInput = {
   referrer: string | null;
   sourceSlug: string;
   utm: { source: string | null; medium: string | null; campaign: string | null; content: string | null };
+  fbclid: string | null;
 };
 
 export type FieldError = { field: "email" | "zip" | "consent"; message: string };
@@ -47,7 +48,8 @@ export function parseSignup(fd: FormData): { ok: true; value: SignupInput } | { 
       languageAssumed: !picked,
       pageUrl: opt("landing_page"),
       referrer: opt("referrer"),
-      sourceSlug: str(fd.get("source"), 60).replace(/[^a-z0-9-]/gi, "") || "home",
+      sourceSlug: str(fd.get("source"), 80).replace(/[^a-z0-9-]/gi, "") || "home",
+      fbclid: /^[A-Za-z0-9_-]{1,200}$/.test(str(fd.get("fbclid"), 200)) ? str(fd.get("fbclid"), 200) : null,
       utm: { source: opt("utm_source"), medium: opt("utm_medium"), campaign: opt("utm_campaign"), content: opt("utm_content") },
     },
   };

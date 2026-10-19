@@ -8,7 +8,7 @@ import { CONSENT_TEXT, LANGUAGES } from "@/config/signup";
 
 const idle: JoinState = { status: "idle" };
 
-export function SignupForm({ source, showLanguage = false }: { source: string; showLanguage?: boolean }) {
+export function SignupForm({ source, showLanguage = false, ctaLabel = "Get first access" }: { source: string; showLanguage?: boolean; ctaLabel?: string }) {
   const [state, onSubmit, pending] = usePreservedForm(joinList, idle);
   const uid = useId();
   const err = state.status === "error" ? state : null;
@@ -67,7 +67,7 @@ export function SignupForm({ source, showLanguage = false }: { source: string; s
         type="submit" disabled={pending}
         className="min-h-14 rounded-sm border-[3px] border-ink bg-primary px-6 text-lg font-bold text-on-primary shadow-pop transition-transform hover:bg-primary-deep active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:cursor-wait disabled:opacity-70"
       >
-        {pending ? "Joining…" : "Get first access"}
+        {pending ? "Joining…" : ctaLabel}
       </button>
 
       <p id={`${uid}-status`} role="status" aria-live="polite" className="text-sm font-semibold">

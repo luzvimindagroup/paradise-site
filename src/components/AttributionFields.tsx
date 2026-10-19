@@ -6,6 +6,9 @@ import { useSyncExternalStore } from "react";
 // travels with the signup even if they browse around first.
 const KEY = "ps_attr";
 const UTMS = ["utm_source", "utm_medium", "utm_campaign", "utm_content"] as const;
+// Ad click id added by Facebook/Instagram ads. Kept with the signup so a conversion can be matched to the ad later.
+const CLICK_IDS = ["fbclid"] as const;
+const TRACKED = [...UTMS, ...CLICK_IDS] as const;
 let cached: string | null = null;
 
 function snapshot(): string {
@@ -15,16 +18,22 @@ function snapshot(): string {
     landing_page: window.location.pathname + window.location.search,
     referrer: document.referrer,
   };
-  UTMS.forEach((k) => { const v = q.get(k); if (v) fresh[k] = v.slice(0, 200); });
-  const hasUtm = UTMS.some((k) => fresh[k]);
+  TRACKED.forEach((k) => { const v = q.get(k); if (v) fresh[k] = v.slice(0, 200); });
+  const hasUtm = UTMS.some((k) => fresh[k]); // only real campaign tags count; Facebook adds fbclid to every outbound link
 
   // A link with UTM tags (a new ad click) replaces what we remembered.
   // Otherwise keep the first-touch info from the visitor's earlier page.
   let first = fresh;
   try {
     const saved = window.localStorage.getItem(KEY);
-    if (saved && !hasUtm) first = JSON.parse(saved);
-    else window.localStorage.setItem(KEY, JSON.stringify(fresh));
+    if (saved && !hasUtm) {
+      first = JSON.parse(saved);
+      // Keep the remembered campaign, but note a newer ad click id if we didn't have one.
+      CLICK_IDS.forEach((k) => { if (fresh[k] && !first[k]) first[k] = fresh[k]; });
+      window.localStorage.setItem(KEY, JSON.stringify(first));
+    } else {
+      window.localStorage.setItem(KEY, JSON.stringify(fresh));
+    }
   } catch {}
   return (cached = JSON.stringify({ ...first, started_at: String(Date.now()) }));
 }
@@ -36,7 +45,7 @@ export function AttributionFields() {
   const a = JSON.parse(raw) as Record<string, string>;
   return (
     <>
-      {["landing_page", "referrer", ...UTMS].map((k) => (
+      {["landing_page", "referrer", ...TRACKED].map((k) => (
         <input key={k} type="hidden" name={k} value={a[k] ?? ""} />
       ))}
       <input type="hidden" name="started_at" value={a.started_at ?? ""} />

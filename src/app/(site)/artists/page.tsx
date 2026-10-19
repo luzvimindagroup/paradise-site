@@ -13,8 +13,7 @@ export default async function ArtistsPage() {
   const artists = await getPublicArtists();
   return (
     <main className="mx-auto max-w-4xl px-5 py-6 sm:px-10 sm:py-12">
-      <Link href="/" className="inline-flex min-h-11 items-center text-sm font-bold underline">Back</Link>
-      <h1 className="mt-6 font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.95] font-extrabold uppercase">Artists</h1>
+      <h1 className="font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.95] font-extrabold uppercase">Artists</h1>
 
       {artists.length > 0 ? (
         <ul className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">

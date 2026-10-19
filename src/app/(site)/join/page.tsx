@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SignupForm } from "@/components/SignupForm";
 
 export const metadata: Metadata = {
@@ -10,10 +9,7 @@ export const metadata: Metadata = {
 export default function JoinPage() {
   return (
     <main className="mx-auto max-w-2xl px-5 py-6 sm:px-10 sm:py-12">
-      <Link href="/" className="inline-flex min-h-11 items-center text-sm font-bold underline">
-        Back
-      </Link>
-      <h1 className="mt-6 font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.95] font-extrabold uppercase">
+      <h1 className="font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.95] font-extrabold uppercase">
         Join the list
       </h1>
       <p className="mt-4 max-w-[44ch] text-lg text-ink-soft">

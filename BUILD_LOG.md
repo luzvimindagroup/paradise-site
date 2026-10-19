@@ -18,3 +18,4 @@ Each module built, its date, and whether it is generic (G) or Paradise-specific 
 | 2026-10-14 | Cookie banner, consent, GTM data-layer events (`src/lib/generic/analytics/`, `AnalyticsRoot`); privacy placeholder updated | G (lib) / P (banner copy) |
 | 2026-10-15 | Events: table, photo storage, admin CRUD, public list/detail/OG image, home banner from data (`src/lib/generic/events/`, `src/lib/events.ts`, `src/app/events/`) | G (engine) / P (pages) |
 | 2026-10-15 | Artists: table, photo bucket, admin CRUD, permission gate, public roster and profile pages (`src/lib/generic/artists/`, `src/lib/generic/images/`, `src/lib/artists.ts`, `src/app/artists/`) | G (engine) / P (pages) |
+| 2026-10-16 | Landing pages: table, admin, public `/l/[slug]`, per-page SEO, JSON-LD, sitemap, OG image; ad-tracking readiness (`landing_view`, `event_id`, `fbclid`) (`src/lib/generic/landing/`, `src/lib/landing.ts`, `src/app/l/`) | G (engine) / P (pages) |

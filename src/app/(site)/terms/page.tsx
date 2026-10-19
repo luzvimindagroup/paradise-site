@@ -6,8 +6,7 @@ export const metadata: Metadata = { title: "Terms" };
 export default function TermsPage() {
   return (
     <main className="mx-auto max-w-2xl px-5 py-6 sm:px-10 sm:py-12">
-      <Link href="/" className="inline-flex min-h-11 items-center text-sm font-bold underline">Back</Link>
-      <h1 className="mt-6 font-display text-5xl leading-none font-extrabold uppercase">Terms</h1>
+      <h1 className="font-display text-5xl leading-none font-extrabold uppercase">Terms</h1>
       <p className="mt-4 rounded-sm border-[3px] border-ink p-4 font-semibold">
         [COUNSEL REVIEW REQUIRED] Placeholder text. Not final legal copy.
       </p>

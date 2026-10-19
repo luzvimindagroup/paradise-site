@@ -290,6 +290,42 @@ The site stores only the *date* of permission. Keep the actual written document 
 
 **Files:** database `supabase/migrations/20261015010000_create_artists.sql`; engine `lib/generic/artists/` (links, gate, validation) plus `lib/generic/images/` and `lib/generic/slug.ts` (shared); wiring `lib/artists.ts`; options in `config/artists.ts`; admin `app/admin/(panel)/artists/`; public `app/artists/`, `components/ArtistCard.tsx`.
 
+## 10g. Landing pages (`/l/[slug]`) and ad-tracking readiness
+
+**What it is:** a focused page for an ad, a QR code, or a link in a bio: a photo, a headline, one line, and the signup form, with no site navigation to pull people away. You manage them in `/admin/landing-pages`. A page can **stand alone** (a general "Join the list" page for a Facebook ad) or be **linked to an artist and/or an event**.
+
+**The gate again.** A landing page shows only if it is published **and** everything it links to is itself public. If an artist loses "published" or permission, any landing page linked to them disappears (404) instead of naming them. Linked artists/events are read through their own gates (`getPublicArtist`, `getPublicEvent`), so no landing page can bypass the artist-permission rule. You can't publish a page whose linked artist isn't public yet. Text you type (headline, body) is free text, so the usual reminder applies: no venue, date, sponsor, or unapproved artist name until cleared.
+
+**Photo:** the page's own, else the linked artist's, else the linked event's, else none (a type-only page).
+
+**Search optimization (SEO), built in, per page**
+- **Search title and description** boxes with live character counts and a "what it may look like in Google" preview. Blank = uses the headline and subheadline.
+- **One clear heading** (the headline is the page's only H1), a short readable web address, a **canonical** link (the one official address for the page), and Open Graph/Twitter tags.
+- A **share picture** generated per page (headline on black with the gold bar).
+- **Structured data (JSON-LD):** every page says "I'm a WebPage of this site"; a linked event is described as an *Event* only when both its date and venue are public.
+- **Sitemap** (`/sitemap.xml`): lists public pages for search engines. It is **empty until the site goes live**, and `robots.txt` points to it then. Pages with "Hide this page from search engines" ticked are left out and tagged noindex (useful for ad-only pages).
+- **Never overrides "not live yet":** a page can only ever turn indexing *off*; nothing here can turn it on before you set `ALLOW_INDEXING`.
+- Fast: pages are prepared ahead and cached; admin saves refresh them at once.
+
+**Not-found pages.** An unknown landing/event/artist address shows a "not found" screen, and Next.js marks it `noindex` automatically. Because Next sends the prepared page first, the HTTP status is still 200 (a "soft 404"; Google recognises these and doesn't index them). Returning a true 404 would need a database check on every page view; we decided that isn't worth the extra load. See open item 12.
+
+**Tracking.** Signups from a landing page are tagged `l-<slug>`, plus the ad's UTM tags (source/medium/campaign/content) as before.
+
+**Meta (Facebook/Instagram) Pixel readiness: what is built, what is left.** You said to set it up later but correctly. Built now:
+1. A **`landing_view`** analytics event (once per visit, after cookie consent, with the page's slug) for an ad tag to listen to.
+2. **`waitlist_submit`** now carries an **`event_id`**, the same id stored with the signup in the database. When a browser pixel and a later server-side report (Meta's Conversions API) both send the same event id, Meta counts the conversion once.
+3. The ad's **click id (`fbclid`)** is captured from the link and stored with the signup, for matching conversions to ads later. The privacy page mentions it.
+4. All of it goes through Google Tag Manager, so adding the pixel won't need code changes in pages.
+**Left for later (when you're ready):** create the Meta Business Manager and Pixel under the company account (see the build brief, section 4); create the GTM container (also not done yet) and add a Meta Pixel tag fired by `landing_view` and `waitlist_submit`; add the server-side Conversions API call (reads `fbclid` and `signup_event_id`); have counsel review the privacy and cookie wording for ad tracking.
+
+**Files:** database `supabase/migrations/20261016000000_create_landing_pages.sql` (also adds `fbclid` and `signup_event_id` to subscribers); engine `lib/generic/landing/` (gate, validation, JSON-LD); wiring `lib/landing.ts`, `lib/landing-admin.ts`; admin `app/admin/(panel)/landing-pages/`; public `app/l/[slug]/`, `components/LandingView.tsx`; `app/sitemap.ts`, `app/robots.ts`.
+
+## 10h. Header and footer
+
+Every public page except landing pages now shares one header and one footer (`components/SiteHeader.tsx`, `components/SiteFooter.tsx`). The header has the "Paradise Sessions" wordmark (a link home), Events, Artists, About, and a Join button. On phones only the wordmark and Join show; the other links are in the footer, so there is no hamburger menu to maintain. **The home page hides the wordmark**, because its hero already carries the name (Alan's rule: the name appears once above the fold). Landing pages stay navigation-free on purpose, so an ad visitor isn't pulled away.
+
+**How it's wired:** the inner pages moved into a folder named `app/(site)/`. The parentheses make a "route group": the folder shares one layout (`(site)/layout.tsx`, which adds the header and footer) without changing any web address. The home page, landing pages (`app/l/`), and admin sit outside that folder, so they decide for themselves. The old "Back" links on inner pages were removed, since the header replaces them.
+
 ## 11. The project paperwork
 
 - **`CLAUDE.md`**: the standing rules Claude reads every session: the seven compliance hard stops, naming rules (never "Sama Soul", never "PH", never "Paradise Presents"), design rules, and how to work with you (plan first, small branches, screenshot every UI change, never commit secrets).
@@ -317,8 +353,9 @@ The site stores only the *date* of permission. Keep the actual written document 
 | 3 | **Privacy page** placeholder now covers contact messages, browser memory, the signup cookie, and analytics (updated 2026-10-14). | Counsel still has to review. Keep updating it whenever a feature collects new data. |
 | 10 | **Hardening to do before launch** (from the 2026-10-14 code review, deliberately deferred): rate-limit signups and contact (bots that skip the hidden timer field are only stopped by the honeypot); retry Klaviyo syncs that failed (the dashboard counts them, nothing retries yet); restrict where the login link may point (Supabase's redirect list already limits it); `AttributionFields` remembers UTMs only from the page the visitor first loaded. | Build Order step 7 |
 | 11 | **Events data check.** The first test event named a real-looking artist and venue with both public boxes ticked, and no agreement. It was set back to a draft. Before launch, review every event's title and description by hand. | Ongoing |
-| 12 | **"Soft 404" on unknown event/landing addresses** (from the events code review): a missing page streams a "not found" screen but with a 200 status instead of 404, so search engines may index nonexistent URLs. Not an issue while the site is noindex, but must be solved before launch, and the same pattern must be handled correctly in the landing pages (SEO is a stated requirement). | Before launch |
+| 12 | **"Soft 404" on unknown event/artist/landing addresses.** The page streams a "not found" screen with HTTP status 200 (Next sends its prepared page first), but Next adds a noindex tag and Google treats these as soft 404s, so the practical harm is small. A true 404 needs a database check on every page view; decision: not worth it for now. Revisit if Search Console reports soft-404 problems after launch. | Accepted / revisit |
 | 13 | **Storage limits are layered, not identical** (4 MB app limit, 4.5 MB request limit, 5 MB bucket limit). Harmless because the strictest, 4 MB, always wins, and the browser shrinks photos long before that. If a replaced photo can't be deleted from storage it stays reachable by its link: the server log records the file name, so check the logs after changing a photo for a person whose permission was withdrawn. | Note |
+| 14 | **Meta Pixel** is prepared but not installed. Needs the company Meta Business Manager, a pixel, and the GTM container (see section 10g checklist). | Later |
 | 9 | **No GTM/GA4 yet.** Analytics is built but dormant until `NEXT_PUBLIC_GTM_ID` is set. Needs the company Google account. | Waiting on Alan |
 | 4 | **Gold-on-black check** with locals before the palette is final. | Open |
 | 5 | ~~Contact migration~~ applied 2026-10-14 and tested end to end. **No email alert yet** when a message arrives (check `/admin/messages`). | Partly done |
@@ -343,3 +380,6 @@ The site stores only the *date* of permission. Keep the actual written document 
 | 2026-10-15 | Added section 10f: artists (permission gate in three places, fixed link types, shared image uploader). |
 | 2026-10-15 | Photo picker now auto-resizes in the browser (2000 px, JPEG), shared by events and artists. |
 | 2026-10-15 | Artists code review: failed reads no longer cached as "not found" (events too), Save is blocked while a photo is still being shrunk, permission dates use Pacific time, links with embedded passwords rejected and duplicates dropped, blank web address on edit keeps the current one, deleted-photo failures logged. |
+| 2026-10-16 | Added 10g: landing pages with per-page SEO, sitemap, JSON-LD, ad-tracking readiness (landing_view, event_id, fbclid). Detail pages use the "check before streaming" pattern. Open item 12 reclassified. |
+| 2026-10-18 | Added 10h: shared header and footer via the `(site)` route group. |
+| 2026-10-18 | Landing pages + header code review: an ad click id no longer wipes a remembered campaign; web addresses can't end in a hyphen; long landing addresses keep their signup tag; home Join button scrolls to the form; one shared id check (`lib/generic/ids.ts`); brand strings from config. |

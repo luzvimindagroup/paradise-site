@@ -12,8 +12,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <main className="mx-auto max-w-2xl px-5 py-6 sm:px-10 sm:py-12">
-      <Link href="/" className="inline-flex min-h-11 items-center text-sm font-bold underline">Back</Link>
-      <h1 className="mt-6 font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.95] font-extrabold uppercase">
+      <h1 className="font-display text-[clamp(2.4rem,9vw,4.5rem)] leading-[0.95] font-extrabold uppercase">
         About
       </h1>
       <div className="mt-6 grid gap-5 text-lg text-ink-soft">
