@@ -9,6 +9,7 @@ import { isUuid } from "@/lib/generic/ids";
 import { requireAdmin } from "@/lib/generic/admin/guard";
 import { missingForPublishing } from "@/lib/generic/artists/public";
 import { parseArtist } from "@/lib/generic/artists/validate";
+import { todayIn } from "@/lib/generic/events/zoned";
 import { uploadImage } from "@/lib/generic/images/upload";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
 
@@ -18,8 +19,7 @@ export async function saveArtist(_prev: ArtistFormState, formData: FormData): Pr
   await requireAdmin();
   const fail = (message: string): ArtistFormState => ({ status: "error", message });
 
-  // "Today" in the site's own time zone (not UTC), so an evening entry can't be dated tomorrow.
-  const today = new Intl.DateTimeFormat("en-CA", { timeZone: TIMEZONE }).format(new Date());
+  const today = todayIn(TIMEZONE);
   const parsed = parseArtist(formData, { disciplines: DISCIPLINES, today });
   if (!parsed.ok) return fail(parsed.message);
   const v = parsed.value;
