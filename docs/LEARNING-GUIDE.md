@@ -320,6 +320,12 @@ The site stores only the *date* of permission. Keep the actual written document 
 
 **Files:** database `supabase/migrations/20261016000000_create_landing_pages.sql` (also adds `fbclid` and `signup_event_id` to subscribers); engine `lib/generic/landing/` (gate, validation, JSON-LD); wiring `lib/landing.ts`, `lib/landing-admin.ts`; admin `app/admin/(panel)/landing-pages/`; public `app/l/[slug]/`, `components/LandingView.tsx`; `app/sitemap.ts`, `app/robots.ts`.
 
+## 10h. Header and footer
+
+Every public page except landing pages now shares one header and one footer (`components/SiteHeader.tsx`, `components/SiteFooter.tsx`). The header has the "Paradise Sessions" wordmark (a link home), Events, Artists, About, and a Join button. On phones only the wordmark and Join show; the other links are in the footer, so there is no hamburger menu to maintain. **The home page hides the wordmark**, because its hero already carries the name (Alan's rule: the name appears once above the fold). Landing pages stay navigation-free on purpose, so an ad visitor isn't pulled away.
+
+**How it's wired:** the inner pages moved into a folder named `app/(site)/`. The parentheses make a "route group": the folder shares one layout (`(site)/layout.tsx`, which adds the header and footer) without changing any web address. The home page, landing pages (`app/l/`), and admin sit outside that folder, so they decide for themselves. The old "Back" links on inner pages were removed, since the header replaces them.
+
 ## 11. The project paperwork
 
 - **`CLAUDE.md`**: the standing rules Claude reads every session: the seven compliance hard stops, naming rules (never "Sama Soul", never "PH", never "Paradise Presents"), design rules, and how to work with you (plan first, small branches, screenshot every UI change, never commit secrets).
@@ -375,3 +381,4 @@ The site stores only the *date* of permission. Keep the actual written document 
 | 2026-10-15 | Photo picker now auto-resizes in the browser (2000 px, JPEG), shared by events and artists. |
 | 2026-10-15 | Artists code review: failed reads no longer cached as "not found" (events too), Save is blocked while a photo is still being shrunk, permission dates use Pacific time, links with embedded passwords rejected and duplicates dropped, blank web address on edit keeps the current one, deleted-photo failures logged. |
 | 2026-10-16 | Added 10g: landing pages with per-page SEO, sitemap, JSON-LD, ad-tracking readiness (landing_view, event_id, fbclid). Detail pages use the "check before streaming" pattern. Open item 12 reclassified. |
+| 2026-10-18 | Added 10h: shared header and footer via the `(site)` route group. |

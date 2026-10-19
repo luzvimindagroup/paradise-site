@@ -1,4 +1,5 @@
-import { CookieSettingsButton } from "@/components/AnalyticsRoot";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
 import { EventHero } from "@/components/EventHero";
 import { SignupForm } from "@/components/SignupForm";
 import { SITE } from "@/config/site";
@@ -23,14 +24,7 @@ export default async function Home() {
   const featured = await getFeaturedEvent();
   return (
     <>
-      <header className="mx-auto flex max-w-6xl items-center justify-end px-5 py-4 sm:px-10">
-        <a
-          href="#join"
-          className="inline-flex min-h-11 items-center rounded-sm border-[3px] border-ink px-4 text-sm font-bold"
-        >
-          Join the list
-        </a>
-      </header>
+      <SiteHeader showWordmark={false} />
 
       <main>
         <section className="mx-auto grid max-w-6xl gap-5 px-5 pt-0 pb-12 sm:px-10 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16 lg:pt-12 lg:pb-20">
@@ -99,17 +93,7 @@ export default async function Home() {
         </section>
       </main>
 
-      <footer className="mx-auto max-w-6xl px-5 py-8 text-sm text-ink-soft sm:px-10">
-        <p>
-          {SITE.series} · {SITE.market}
-        </p>
-        <nav aria-label="Footer" className="mt-2 flex flex-wrap gap-x-5">
-          {[["Events", "/events"], ["Artists", "/artists"], ["About", "/about"], ["Contact", "/contact"], ["Privacy", "/privacy"], ["Terms", "/terms"]].map(([t, h]) => (
-            <a key={h} href={h} className="inline-flex min-h-11 items-center underline">{t}</a>
-          ))}
-          <CookieSettingsButton className="inline-flex min-h-11 items-center underline" />
-        </nav>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

@@ -2,7 +2,7 @@
 
 import { usePreservedForm } from "@/lib/generic/forms/usePreservedForm";
 import { useEffect, useId } from "react";
-import { sendContact, type ContactState } from "@/app/contact/actions";
+import { sendContact, type ContactState } from "@/app/(site)/contact/actions";
 import { AttributionFields } from "@/components/AttributionFields";
 import { CONTACT_CATEGORIES } from "@/config/contact";
 import { track } from "@/lib/generic/analytics/track";
