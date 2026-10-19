@@ -374,13 +374,13 @@ Done on 2026-10-18 without needing Alan:
 | 1 | **Double opt-in.** The `/welcome` wording ("Check your email to confirm") is right only if the Klaviyo list is double opt-in. | Alan believes it's switched on. **Verify with a test signup** once Klaviyo keys are connected: the confirmation email should arrive, and the profile should stay unsubscribed until the click. |
 | 2 | **Error color.** Errors use coral ("chili"). Rule clarified by Alan 2026-10-14: avoid red and blue because of gang affiliation, but an occasional use is fine as long as neither predominates. Coral is a minor, error-only use. | Low priority. Alan will revisit later. |
 | 3 | **Privacy page** placeholder now covers contact messages, browser memory, the signup cookie, and analytics (updated 2026-10-14). | Counsel still has to review. Keep updating it whenever a feature collects new data. |
-| 10 | ~~Hardening~~: rate limiting and Klaviyo retry built 2026-10-18 (section 10j). Rate limiting is inert until the `rate_limits` SQL is run. | Needs the SQL run |
+| 10 | ~~Hardening~~: rate limiting and Klaviyo retry built 2026-10-18 (section 10j). The `rate_limits` SQL was run 2026-10-19, so rate limiting is live. | Done |
 | 11 | **Events data check.** The first test event named a real-looking artist and venue with both public boxes ticked, and no agreement. It was set back to a draft. Before launch, review every event's title and description by hand. | Ongoing |
 | 12 | **"Soft 404" on unknown event/artist/landing addresses.** The page streams a "not found" screen with HTTP status 200 (Next sends its prepared page first), but Next adds a noindex tag and Google treats these as soft 404s, so the practical harm is small. A true 404 needs a database check on every page view; decision: not worth it for now. Revisit if Search Console reports soft-404 problems after launch. | Accepted / revisit |
 | 13 | **Storage limits are layered, not identical** (4 MB app limit, 4.5 MB request limit, 5 MB bucket limit). Harmless because the strictest, 4 MB, always wins, and the browser shrinks photos long before that. If a replaced photo can't be deleted from storage it stays reachable by its link: the server log records the file name, so check the logs after changing a photo for a person whose permission was withdrawn. | Note |
 | 14 | **Meta Pixel** is prepared but not installed. Needs the company Meta Business Manager, a pixel, and the GTM container (see section 10g checklist). | Later |
 | 15 | **Signups-by-source is computed in the app**, reading one small column for every subscriber. Fine up to tens of thousands; past that, switch to a grouped SQL query (a database view) instead. | Later, if ever |
-| 9 | **No GTM/GA4 yet.** Analytics is built but dormant until `NEXT_PUBLIC_GTM_ID` is set. Needs the company Google account. | Waiting on Alan |
+| 9 | **GTM/GA4:** container `GTM-KX8KXJH4` created under the company account 2026-10-18 and set in `.env.local` and Vercel (2026-10-19). Still to do in GTM: the GA4 Google Tag plus the four event tags, then Submit. | In progress |
 | 4 | **Gold-on-black check** with locals before the palette is final. | Open |
 | 5 | ~~Contact migration~~ applied 2026-10-14 and tested end to end. **No email alert yet** when a message arrives (check `/admin/messages`). | Partly done |
 | 7 | **Supabase email sender** is rate-limited (a few emails per hour): fine for admin sign-in, but connect Resend before real use. | Later |
@@ -411,3 +411,4 @@ Done on 2026-10-18 without needing Alan:
 | 2026-10-18 | CSV review: export and by-source counts read past the 1,000-row page cap; Pacific date in the filename; one shared date formatter. |
 | 2026-10-18 | Added 10j: hardening. Rate limiting, Klaviyo retry, and the three passed checks (compliance, accessibility, speed). |
 | 2026-10-18 | Hardening review: per-email limits replace crowd-unfriendly per-connection ones; admin login can't be locked out by a stranger; platform IP header preferred; retry batches of 20; sweep on every call; privacy note widened. |
+| 2026-10-19 | Open items: rate-limit SQL run, GTM id set in Vercel. |
