@@ -1,7 +1,9 @@
 "use server";
 
 import { headers } from "next/headers";
+import { LIMITS, TOO_MANY } from "@/config/rate-limits";
 import { isAllowedAdmin } from "@/lib/generic/admin/guard";
+import { allowAttempt } from "@/lib/generic/rate-limit/limit";
 import { createClient } from "@/lib/generic/supabase/server";
 
 export type LoginState =
@@ -16,6 +18,10 @@ export async function requestLoginLink(_prev: LoginState, formData: FormData): P
   if (!EMAIL.test(email)) return { status: "error", message: "Enter a valid email, like you@email.com." };
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return { status: "error", message: "Login isn't connected to the database yet." };
+  }
+
+  if (!(await allowAttempt(LIMITS.loginIp)) || !(await allowAttempt(LIMITS.loginEmail, email))) {
+    return { status: "error", message: TOO_MANY };
   }
 
   // Only emails on the admins list get a link. Everyone sees the same answer,

@@ -334,6 +334,21 @@ Every public page except landing pages now shares one header and one footer (`co
 
 **Signups by source:** the dashboard now lists how many signups came from each page: `home`, `join`, `events`, `about`, `artist-<name>`, `l-<landing page>`, and so on. This is the quickest way to see which link, QR code, or ad is working. (Per-campaign detail is in the CSV's UTM columns.)
 
+## 10j. Pre-launch hardening (Build Order step 7)
+
+Done on 2026-10-18 without needing Alan:
+
+**Checks that passed with nothing to fix**
+- **Compliance search** of all code and copy for "Sama Soul", "PH", "presents", "Luzviminda", "investor", "sponsor", "veteran", venue names, and dates: clean. (The only hits are admin reminders not to add those things, and a test proving "Sponsor" is rejected as a contact category.)
+- **Accessibility:** an automated WCAG 2.1 A/AA scan (axe) of all ten public pages at phone and desktop widths: zero violations.
+- **Speed:** on a simulated 4G phone with a slowed-down processor, the home page's main content paints in about 0.5 s (target: under 2.5 s).
+
+**Rate limiting (new).** Each visitor connection gets a generous number of attempts: 6 signups per 10 minutes, 4 contact messages per 10 minutes, 5 login-link requests per 15 minutes (plus 3 per hour per email). Past that, the form says "Too many attempts". Real people never hit this; scripts do. How it works: `lib/generic/rate-limit/` counts attempts in a tiny database table through a function `rate_limit_hit`, so the count is shared across all of Vercel's servers. The visitor's network address is **scrambled one-way** before it is stored (never the raw address), and old counters are swept daily. The privacy page says so. **If the database function isn't installed yet, nothing is blocked** and the server log says "Rate limiting is off", so a missing step never locks real people out. Limits live in `config/rate-limits.ts`.
+
+**Klaviyo retry (new).** The dashboard's "Klaviyo sync failed" tile now has a **Retry failed Klaviyo syncs** button (it appears only when the count is above zero). It re-sends up to 100 people at a time and reports how many succeeded. Safe to press repeatedly. The signup and the retry share one piece of code (`lib/klaviyo-sync.ts`), so the two can't drift apart.
+
+**Still open before launch:** the items in section 13 that need Alan (GTM/GA4 tags, double opt-in test, ZIP list, language review, footer credit, counsel's privacy/terms), real photos instead of test ones, and a final read of every page's copy.
+
 ## 11. The project paperwork
 
 - **`CLAUDE.md`**: the standing rules Claude reads every session: the seven compliance hard stops, naming rules (never "Sama Soul", never "PH", never "Paradise Presents"), design rules, and how to work with you (plan first, small branches, screenshot every UI change, never commit secrets).
@@ -359,7 +374,7 @@ Every public page except landing pages now shares one header and one footer (`co
 | 1 | **Double opt-in.** The `/welcome` wording ("Check your email to confirm") is right only if the Klaviyo list is double opt-in. | Alan believes it's switched on. **Verify with a test signup** once Klaviyo keys are connected: the confirmation email should arrive, and the profile should stay unsubscribed until the click. |
 | 2 | **Error color.** Errors use coral ("chili"). Rule clarified by Alan 2026-10-14: avoid red and blue because of gang affiliation, but an occasional use is fine as long as neither predominates. Coral is a minor, error-only use. | Low priority. Alan will revisit later. |
 | 3 | **Privacy page** placeholder now covers contact messages, browser memory, the signup cookie, and analytics (updated 2026-10-14). | Counsel still has to review. Keep updating it whenever a feature collects new data. |
-| 10 | **Hardening to do before launch** (from the 2026-10-14 code review, deliberately deferred): rate-limit signups and contact (bots that skip the hidden timer field are only stopped by the honeypot); retry Klaviyo syncs that failed (the dashboard counts them, nothing retries yet); restrict where the login link may point (Supabase's redirect list already limits it); `AttributionFields` remembers UTMs only from the page the visitor first loaded. | Build Order step 7 |
+| 10 | ~~Hardening~~: rate limiting and Klaviyo retry built 2026-10-18 (section 10j). Rate limiting is inert until the `rate_limits` SQL is run. | Needs the SQL run |
 | 11 | **Events data check.** The first test event named a real-looking artist and venue with both public boxes ticked, and no agreement. It was set back to a draft. Before launch, review every event's title and description by hand. | Ongoing |
 | 12 | **"Soft 404" on unknown event/artist/landing addresses.** The page streams a "not found" screen with HTTP status 200 (Next sends its prepared page first), but Next adds a noindex tag and Google treats these as soft 404s, so the practical harm is small. A true 404 needs a database check on every page view; decision: not worth it for now. Revisit if Search Console reports soft-404 problems after launch. | Accepted / revisit |
 | 13 | **Storage limits are layered, not identical** (4 MB app limit, 4.5 MB request limit, 5 MB bucket limit). Harmless because the strictest, 4 MB, always wins, and the browser shrinks photos long before that. If a replaced photo can't be deleted from storage it stays reachable by its link: the server log records the file name, so check the logs after changing a photo for a person whose permission was withdrawn. | Note |
@@ -394,3 +409,4 @@ Every public page except landing pages now shares one header and one footer (`co
 | 2026-10-18 | Landing pages + header code review: an ad click id no longer wipes a remembered campaign; web addresses can't end in a hyphen; long landing addresses keep their signup tag; home Join button scrolls to the form; one shared id check (`lib/generic/ids.ts`); brand strings from config. |
 | 2026-10-18 | Added 10i: CSV export and signups-by-source table. |
 | 2026-10-18 | CSV review: export and by-source counts read past the 1,000-row page cap; Pacific date in the filename; one shared date formatter. |
+| 2026-10-18 | Added 10j: hardening. Rate limiting, Klaviyo retry, and the three passed checks (compliance, accessibility, speed). |

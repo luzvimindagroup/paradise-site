@@ -1,7 +1,9 @@
 "use server";
 
 import { CONTACT_CATEGORIES } from "@/config/contact";
+import { LIMITS, TOO_MANY } from "@/config/rate-limits";
 import { parseContact, type ContactField } from "@/lib/generic/contact/validate";
+import { allowAttempt } from "@/lib/generic/rate-limit/limit";
 import { looksLikeBot } from "@/lib/generic/signup/validate";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
 
@@ -17,6 +19,7 @@ export async function sendContact(_prev: ContactState, formData: FormData): Prom
 
   const parsed = parseContact(formData, CONTACT_CATEGORIES);
   if (!parsed.ok) return { status: "error", field: parsed.field, message: parsed.message };
+  if (!(await allowAttempt(LIMITS.contact))) return { status: "error", message: TOO_MANY };
 
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return { status: "not_connected", message: "Messages aren't open yet, so we haven't saved yours. Please check back soon." };

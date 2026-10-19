@@ -16,6 +16,7 @@ export default function PrivacyPage() {
         <p>If you send us a message through the contact form, we keep your name, email, and message so we can reply.</p>
         <p>Your browser remembers which link first brought you here (so we know which links work) and, if you answer the cookie banner, your choice. If you accept, we also use Google Tag Manager to count visits and sign-ups in aggregate. If you decline, none of that runs.</p>
         <p>If you arrive from an ad, we keep the ad&apos;s click ID (a code in the link) with your sign-up, so we can tell which ads are working.</p>
+        <p>To stop automated abuse of our forms, we keep a scrambled (one-way) version of your network address for up to a day. It can&apos;t be turned back into your address.</p>
         <p>After you join the list we place a short-lived cookie (about an hour) so you can add optional answers on the next page.</p>
         <p>You can unsubscribe from any email at any time. We don&apos;t collect phone numbers.</p>
       </div>

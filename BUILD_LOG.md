@@ -20,3 +20,4 @@ Each module built, its date, and whether it is generic (G) or Paradise-specific 
 | 2026-10-15 | Artists: table, photo bucket, admin CRUD, permission gate, public roster and profile pages (`src/lib/generic/artists/`, `src/lib/generic/images/`, `src/lib/artists.ts`, `src/app/artists/`) | G (engine) / P (pages) |
 | 2026-10-16 | Landing pages: table, admin, public `/l/[slug]`, per-page SEO, JSON-LD, sitemap, OG image; ad-tracking readiness (`landing_view`, `event_id`, `fbclid`) (`src/lib/generic/landing/`, `src/lib/landing.ts`, `src/app/l/`) | G (engine) / P (pages) |
 | 2026-10-18 | Signup CSV export (`src/lib/generic/csv/`, `src/app/admin/(panel)/export/`) and signups-by-source on the dashboard | G (csv) / P (route, dashboard) |
+| 2026-10-18 | Hardening: rate limiting (`src/lib/generic/rate-limit/`, `rate_limits` migration), Klaviyo retry (`src/lib/klaviyo-sync.ts`), privacy note | G (limiter) / P (limits config, retry UI) |
