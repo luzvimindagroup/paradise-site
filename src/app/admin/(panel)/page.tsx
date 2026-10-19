@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SOUTH_BAY_ZIPS } from "@/config/south-bay";
 import { requireAdmin } from "@/lib/generic/admin/guard";
 import { createAdminClient } from "@/lib/generic/supabase/admin";
+import { allRows } from "@/lib/generic/supabase/all-rows";
 
 export const metadata: Metadata = { title: "Admin dashboard" };
 
@@ -16,12 +17,12 @@ export default async function DashboardPage() {
     db.from("subscribers").select("id", head).in("zip", [...SOUTH_BAY_ZIPS]),
     db.from("subscribers").select("id", head).eq("klaviyo_status", "failed"),
     db.from("contact_messages").select("id", head),
-    db.from("subscribers").select("source_slug"),
+    allRows<{ source_slug: string | null }>(db, "subscribers", "source_slug").then((rows) => ({ rows, failed: false })).catch(() => ({ rows: [], failed: true })),
   ]);
 
   // Signups per source page (home, join, an artist page, a landing page...), biggest first.
   const sources = Object.entries(
-    ((bySource.data ?? []) as { source_slug: string | null }[]).reduce<Record<string, number>>((acc, r) => {
+    bySource.rows.reduce<Record<string, number>>((acc, r) => {
       const k = r.source_slug || "unknown";
       acc[k] = (acc[k] ?? 0) + 1;
       return acc;
@@ -55,7 +56,9 @@ export default async function DashboardPage() {
       </dl>
 
       <h2 className="mt-10 font-display text-xl font-extrabold uppercase">Signups by source</h2>
-      {sources.length === 0 ? (
+      {bySource.failed ? (
+        <p className="mt-2 text-chili">Couldn&apos;t load the breakdown.</p>
+      ) : sources.length === 0 ? (
         <p className="mt-2 text-ink-soft">No signups yet.</p>
       ) : (
         <table className="mt-3 w-full max-w-md text-left text-sm">

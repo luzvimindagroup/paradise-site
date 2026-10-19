@@ -37,3 +37,13 @@ export function formatZoned(iso: string, tz: string): string {
     timeZone: tz, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
   }).format(new Date(iso));
 }
+
+/** "10/18/26, 7:15 PM" in `tz`: a full date for exports and records. */
+export function formatZonedFull(iso: string, tz: string): string {
+  return new Intl.DateTimeFormat("en-US", { timeZone: tz, dateStyle: "short", timeStyle: "short" }).format(new Date(iso));
+}
+
+/** Today's date as YYYY-MM-DD in `tz` (not UTC, so an evening entry isn't dated tomorrow). */
+export function todayIn(tz: string): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(new Date());
+}

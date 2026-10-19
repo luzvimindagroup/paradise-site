@@ -3,7 +3,7 @@ import { toCsv } from "./csv";
 
 describe("toCsv", () => {
   it("quotes every cell and doubles inner quotes", () => {
-    expect(toCsv(["a", "b"], [['say "hi"', 1]])).toBe('﻿"a","b"\r\n"say ""hi""","1"\r\n');
+    expect(toCsv(["a", "b"], [['say "hi"', 1]])).toBe('\uFEFF"a","b"\r\n"say ""hi""","1"\r\n');
   });
   it("neutralises cells that a spreadsheet would run as a formula", () => {
     const out = toCsv(["x"], [["=HYPERLINK(\"evil\")"], ["+1"], ["@cmd"]]);

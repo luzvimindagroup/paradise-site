@@ -10,5 +10,5 @@ export function toCsv(headers: string[], rows: (string | number | boolean | null
     return `"${s.replace(/"/g, '""')}"`;
   };
   const lines = [headers.map(cell).join(","), ...rows.map((r) => r.map(cell).join(","))];
-  return "﻿" + lines.join("\r\n") + "\r\n"; // BOM so Excel reads accents correctly
+  return "\uFEFF" + lines.join("\r\n") + "\r\n"; // byte-order mark so Excel reads accents correctly
 }
