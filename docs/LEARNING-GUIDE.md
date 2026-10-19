@@ -183,7 +183,7 @@ Talks to Klaviyo's API in plain web requests. Three pieces:
 - `syncProfile()`: two calls. First create or update the person's profile (email, ZIP, details), then subscribe them to the list with email-marketing consent.
 - `updateProperties()`: add the `/welcome` answers to an existing profile.
 
-Whether people must click a confirmation email (double opt-in) is **a setting on the list inside Klaviyo, not in our code**. Our code just asks Klaviyo to subscribe the person; if the list is set to double opt-in, Klaviyo sends the confirmation email and only finishes subscribing them after the click. Alan believes he has switched the list to double opt-in (2026-10-14); this has not been tested yet. Klaviyo stamps the consent time itself; ours is in `subscribers.consent_at`.
+Whether people must click a confirmation email (double opt-in) is **a setting on the list inside Klaviyo, not in our code**. Our code just asks Klaviyo to subscribe the person; if the list is set to double opt-in, Klaviyo sends the confirmation email and only finishes subscribing them after the click. Tested 2026-10-19: the confirmation email arrived and Klaviyo stamped consent only when the link was clicked, so double opt-in is on. Klaviyo stamps the consent time itself; ours is in `subscribers.consent_at`.
 
 ---
 
@@ -371,7 +371,8 @@ Done on 2026-10-18 without needing Alan:
 
 | # | Item | Status |
 |---|---|---|
-| 1 | **Double opt-in.** The `/welcome` wording ("Check your email to confirm") is right only if the Klaviyo list is double opt-in. | Alan believes it's switched on. **Verify with a test signup** once Klaviyo keys are connected: the confirmation email should arrive, and the profile should stay unsubscribed until the click. |
+| 1 | ~~Double opt-in~~ verified 2026-10-19 with a test signup: confirmation email arrived, consent stamped on the click. The `/welcome` wording is correct. | Done |
+| 16 | **Domain not connected.** `paradisesessions.com` is registered at Porkbun but still shows Porkbun's parking page. The live site is at `https://paradise-site-neon.vercel.app`. To connect: Vercel → project → Settings → Domains → add `paradisesessions.com` and `www`; copy the A and CNAME records Vercel shows into Porkbun → DNS (removing the parking records). After that, set the Supabase redirect URL to `https://paradisesessions.com/**`. Share images, canonical links, and the sitemap already assume the real domain. | Open, before launch |
 | 2 | **Error color.** Errors use coral ("chili"). Rule clarified by Alan 2026-10-14: avoid red and blue because of gang affiliation, but an occasional use is fine as long as neither predominates. Coral is a minor, error-only use. | Low priority. Alan will revisit later. |
 | 3 | **Privacy page** placeholder now covers contact messages, browser memory, the signup cookie, and analytics (updated 2026-10-14). | Counsel still has to review. Keep updating it whenever a feature collects new data. |
 | 10 | ~~Hardening~~: rate limiting and Klaviyo retry built 2026-10-18 (section 10j). The `rate_limits` SQL was run 2026-10-19, so rate limiting is live. | Done |
@@ -380,7 +381,7 @@ Done on 2026-10-18 without needing Alan:
 | 13 | **Storage limits are layered, not identical** (4 MB app limit, 4.5 MB request limit, 5 MB bucket limit). Harmless because the strictest, 4 MB, always wins, and the browser shrinks photos long before that. If a replaced photo can't be deleted from storage it stays reachable by its link: the server log records the file name, so check the logs after changing a photo for a person whose permission was withdrawn. | Note |
 | 14 | **Meta Pixel** is prepared but not installed. Needs the company Meta Business Manager, a pixel, and the GTM container (see section 10g checklist). | Later |
 | 15 | **Signups-by-source is computed in the app**, reading one small column for every subscriber. Fine up to tens of thousands; past that, switch to a grouped SQL query (a database view) instead. | Later, if ever |
-| 9 | **GTM/GA4:** container `GTM-KX8KXJH4` created under the company account 2026-10-18 and set in `.env.local` and Vercel (2026-10-19). Still to do in GTM: the GA4 Google Tag plus the four event tags, then Submit. | In progress |
+| 9 | **GTM/GA4:** container `GTM-KX8KXJH4` created under the company account 2026-10-18 and set in `.env.local` and Vercel (2026-10-19; cookie banner confirmed live). GA4 account "Luzviminda Group", property "Paradise Sessions", web stream Measurement ID `G-B4HVB6ZVFB` created 2026-10-19. The `G-` ID lives only inside GTM (the "GA4 base" tag), never in the site code: the site loads GTM, and GTM loads GA4. GTM container version 2 (published 2026-10-19) holds the GA4 base tag plus four event tags (`waitlist_submit`, `profile_complete`, `contact_submit`, `landing_view`). Tested the same day with one signup: Tag Assistant showed the base tag and `waitlist_submit` firing, the Supabase copy was written, and Klaviyo recorded consent one minute after signup, when the confirmation link was clicked. **Double opt-in is confirmed on.** Test row deleted from Supabase; the Klaviyo test profile has to be deleted by hand (our key has no deletion permission). | Done |
 | 4 | **Gold-on-black check** with locals before the palette is final. | Open |
 | 5 | ~~Contact migration~~ applied 2026-10-14 and tested end to end. **No email alert yet** when a message arrives (check `/admin/messages`). | Partly done |
 | 7 | **Supabase email sender** is rate-limited (a few emails per hour): fine for admin sign-in, but connect Resend before real use. | Later |
@@ -412,3 +413,4 @@ Done on 2026-10-18 without needing Alan:
 | 2026-10-18 | Added 10j: hardening. Rate limiting, Klaviyo retry, and the three passed checks (compliance, accessibility, speed). |
 | 2026-10-18 | Hardening review: per-email limits replace crowd-unfriendly per-connection ones; admin login can't be locked out by a stranger; platform IP header preferred; retry batches of 20; sweep on every call; privacy note widened. |
 | 2026-10-19 | Open items: rate-limit SQL run, GTM id set in Vercel. |
+| 2026-10-19 | GA4 property and GTM tags published and tested end to end; double opt-in verified (items 1 and 9 done). New item 16: connect the domain to Vercel. |
