@@ -1,6 +1,9 @@
 // Empty on purpose: no legal entity name anywhere until Alan says counsel cleared it.
 export const PRESENTER_NAME = "";
 
+// Plain footer credit, approved by Alan 2026-10-21. Text only: no link, no offer.
+export const SITE_CREDIT = "Site by Villegas Digital";
+
 export const SITE = {
   house: "Paradise",
   series: "Paradise Sessions",

@@ -347,7 +347,9 @@ Done on 2026-10-18 without needing Alan:
 
 **Klaviyo retry (new).** The dashboard's "Klaviyo sync failed" tile now has a **Retry failed Klaviyo syncs** button (it appears only when the count is above zero). It re-sends 20 people at a time, stops early if Klaviyo keeps failing, and reports how many succeeded. Safe to press repeatedly. The signup and the retry share one piece of code (`lib/klaviyo-sync.ts`), so the two can't drift apart.
 
-**Still open before launch:** the items in section 13 that need Alan (GTM/GA4 tags, double opt-in test, ZIP list, language review, footer credit, counsel's privacy/terms), real photos instead of test ones, and a final read of every page's copy.
+**Still open before launch:** the items in section 13 that need Alan (ZIP list, language review, counsel's privacy/terms), real photos instead of test ones, and a final read of every page's copy. GA4/GTM, double opt-in, the domain, and the footer credit are done.
+
+**Footer credit (2026-10-21).** Alan approved the plain "Site by Villegas Digital" line, so it now sits under the footer links in small type. It is text only: no link, no services pitch, because the rules allow a credit but not an offer. The wording lives in `SITE_CREDIT` in `src/config/site.ts`; make it an empty string and the line disappears.
 
 ## 11. The project paperwork
 
@@ -372,7 +374,7 @@ Done on 2026-10-18 without needing Alan:
 | # | Item | Status |
 |---|---|---|
 | 1 | ~~Double opt-in~~ verified 2026-10-19 with a test signup: confirmation email arrived, consent stamped on the click. The `/welcome` wording is correct. | Done |
-| 16 | **Domain connected 2026-10-19.** `paradisesessions.com` (Production) and `www` (redirects to the bare name) were added in Vercel → Settings → Domains; Porkbun DNS got an A record (`216.198.79.1`) and a CNAME for `www`. Verified: the site serves at the real address, `www` and `http` redirect with a 308, still noindex. The old `paradise-site-neon.vercel.app` keeps working too. Supabase Auth → URL Configuration must list `https://paradisesessions.com/**` as a redirect URL (and Site URL set to the domain) or the admin magic link is refused at the new address. | Done; Supabase URL to confirm |
+| 16 | **Domain connected 2026-10-19.** `paradisesessions.com` (Production) and `www` (redirects to the bare name) were added in Vercel → Settings → Domains; Porkbun DNS got an A record (`216.198.79.1`) and a CNAME for `www`. Verified: the site serves at the real address, `www` and `http` redirect with a 308, still noindex. The old `paradise-site-neon.vercel.app` keeps working too. Supabase Auth → URL Configuration must list `https://paradisesessions.com/**` as a redirect URL (and Site URL set to the domain) or the admin magic link is refused at the new address. | Done (admin login verified at the domain 2026-10-21) |
 | 2 | **Error color.** Errors use coral ("chili"). Rule clarified by Alan 2026-10-14: avoid red and blue because of gang affiliation, but an occasional use is fine as long as neither predominates. Coral is a minor, error-only use. | Low priority. Alan will revisit later. |
 | 3 | **Privacy page** placeholder now covers contact messages, browser memory, the signup cookie, and analytics (updated 2026-10-14). | Counsel still has to review. Keep updating it whenever a feature collects new data. |
 | 10 | ~~Hardening~~: rate limiting and Klaviyo retry built 2026-10-18 (section 10j). The `rate_limits` SQL was run 2026-10-19, so rate limiting is live. | Done |
@@ -415,3 +417,4 @@ Done on 2026-10-18 without needing Alan:
 | 2026-10-19 | Open items: rate-limit SQL run, GTM id set in Vercel. |
 | 2026-10-19 | GA4 property and GTM tags published and tested end to end; double opt-in verified (items 1 and 9 done). New item 16: connect the domain to Vercel. |
 | 2026-10-19 | Domain connected: paradisesessions.com live on Vercel, www and http redirect. Item 16 updated with the Supabase redirect-URL step. |
+| 2026-10-21 | Admin login verified at the real domain (item 16 closed). Footer credit "Site by Villegas Digital" added after Alan's approval. |
