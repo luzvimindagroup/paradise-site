@@ -1,5 +1,5 @@
 import { CookieSettingsButton } from "@/components/AnalyticsRoot";
-import { SITE } from "@/config/site";
+import { SITE, SITE_CREDIT } from "@/config/site";
 
 const LINKS = [["Events", "/events"], ["Artists", "/artists"], ["About", "/about"], ["Contact", "/contact"], ["Privacy", "/privacy"], ["Terms", "/terms"]] as const;
 
@@ -13,6 +13,7 @@ export function SiteFooter() {
         ))}
         <CookieSettingsButton className="inline-flex min-h-11 items-center underline" />
       </nav>
+      {SITE_CREDIT && <p className="mt-4 text-xs">{SITE_CREDIT}</p>}
     </footer>
   );
 }
